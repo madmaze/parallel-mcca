@@ -14,7 +14,7 @@ def processFile(fname):
 	lines=""
 	for line in f.readlines():
 		lines+=line.strip()+" "
-	lines = cleanText(lines)
+	lines = cleanText(lines).split(". ")
 	# TODO: split by sentence?
 	return lines
 
