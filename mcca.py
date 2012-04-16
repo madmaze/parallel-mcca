@@ -1,4 +1,4 @@
-):
+def context(sentence):
         length = len(sentence)
         wordlist = {}
         cvector = {}
