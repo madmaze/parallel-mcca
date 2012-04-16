@@ -11,7 +11,7 @@ def cleanText(inText):
 def saveProcessed(data,fname):
 	fout = open(fname+".processed", "w")
 	for line in data:
-		print line
+		#print line
 		fout.write(line+"\n")
 		
 
@@ -22,7 +22,7 @@ def processFile(fname):
 	for line in f.readlines():
 		lines+=line.strip()+" "
 	
-	print lines
+	#print lines
 	# split by .
 	lines = cleanText(lines).split(". ")
 	tmp=[]
@@ -69,8 +69,6 @@ def main(dataDir, langDirs):
 			if f.find(".txt") > 0:
 				cnt+=1
 				saveProcessed(processFile(f),"PROCESSED/"+l+"/"+str(cnt))
-				
-				exit()
 
 		print l, cnt, "input files"
 
