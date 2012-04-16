@@ -5,7 +5,7 @@ import re
 def cleanText(inText):
 	# strip out whatever we need here 
 	p = re.compile('[,]')
-	outText = p.sub('',inText.lower())
+	outText = p.sub('',inText)
 	return outText
 
 def processFile(fname):
@@ -14,9 +14,45 @@ def processFile(fname):
 	lines=""
 	for line in f.readlines():
 		lines+=line.strip()+" "
+	
+	print lines
+	# split by .
 	lines = cleanText(lines).split(". ")
-	# TODO: split by sentence?
-	return lines
+	tmp=[]
+	
+	# split by ?
+	for l in lines:
+		tmp += l.split("? ")
+
+	lines=tmp[:]
+	tmp=[]
+	
+	# split by !
+	for l in lines:
+		tmp += l.split("! ")
+	
+	lines=tmp[:]
+	tmp=[]	
+	
+	# split by !
+	for l in lines:
+		tmp += l.split('" ')
+	
+	lines=tmp[:]
+	tmp=[]
+	
+	for l in lines:
+		tmp += l.split(' "')
+	
+	lines=tmp[:]
+	tmp=[]
+	p2 = re.compile('[?.,"\']')
+	for l in lines:
+		if l != '':
+			t = p2.sub(' ',l).strip()
+			tmp.append(t)
+			#print t
+	return tmp[:]
 
 def main(dataDir, langDirs):
 	for l in langDirs:
