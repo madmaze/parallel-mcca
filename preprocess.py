@@ -8,6 +8,13 @@ def cleanText(inText):
 	outText = p.sub('',inText)
 	return outText
 
+def saveProcessed(data,fname):
+	fout = open(fname+".processed", "w")
+	for line in data:
+		#print line
+		fout.write(line+"\n")
+		
+
 def processFile(fname):
 	print "processing:",fname
 	f = open(fname, "r");
@@ -15,7 +22,7 @@ def processFile(fname):
 	for line in f.readlines():
 		lines+=line.strip()+" "
 	
-	print lines
+	#print lines
 	# split by .
 	lines = cleanText(lines).split(". ")
 	tmp=[]
@@ -61,8 +68,7 @@ def main(dataDir, langDirs):
 			# chop out non input files.. aka readme
 			if f.find(".txt") > 0:
 				cnt+=1
-				print processFile(f)
-				exit()
+				saveProcessed(processFile(f),"PROCESSED/"+l+"/"+str(cnt))
 
 		print l, cnt, "input files"
 
