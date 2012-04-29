@@ -5,6 +5,7 @@
 
 import glob
 import re
+import fVectors
 
 class data:
 	langDirs=[]
@@ -15,6 +16,9 @@ class data:
 		self.test='yes'
 		self.dataDir=inputDir
 		self.langDirs=langs
+	
+	def runMCCA(self):
+		print "in MCCA..."
 	
 	def preprocess(self):
 		print "here",self.langDirs

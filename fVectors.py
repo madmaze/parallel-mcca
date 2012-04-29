@@ -1,3 +1,4 @@
+# This creates the context feature vector
 def context(sentence):
         s=sentence.split(" ")
         length = len(s)
@@ -58,7 +59,7 @@ def context(sentence):
                 wordlist = {}                  
         return cvector
 
-
+# This creates the orthographic feature vector
 def ortho(sentence):
         s = sentence.split(" ")
         length = len(s)
