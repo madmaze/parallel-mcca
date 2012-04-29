@@ -1,13 +1,24 @@
-# This creates the context feature vector
+#MT Final project 4/29/2012 Johns Hopkins university
+#Functions that take input sentences and return feature vectors
+#vectors can then be used to compare words in the data
+#and build a dictionary of words with similar features
+#==============================================================
+
+
+#Takes a sentence as input
+#Returns a dictionary with unique words in the sentence as keys
+#and dictionaries for their values
+#where the dictionaries contain the +/- 2 context words as keys
+#and the number of times those words occur as values
 def context(sentence):
         s=sentence.split(" ")
         length = len(s)
         wordlist = {}
         cvector = {}
-        for n,x in enumerate(s):
-                if x in cvector:
-                        wordlist = cvector[x]        
-                if n >1:
+        for n,word in enumerate(s):
+                if word in cvector:
+                        wordlist = cvector[word]        
+                if n >1:    #check and see there is a word in the -2 position
                         temp = s[n-2]
 
                         if len(wordlist)==0:
@@ -19,7 +30,7 @@ def context(sentence):
                                         wordlist[temp] = value
                                 else:
                                         wordlist[temp] = 1
-                if n >0:
+                if n >0:    #check and see there is a word in the -1 position
                         temp = s[n-1]
 
                         if len(wordlist)==0:
@@ -31,7 +42,7 @@ def context(sentence):
                                         wordlist[temp] = value
                                 else:
                                         wordlist[temp] = 1
-                if n < (length-1):
+                if n < (length-1):  #check and see there is a word in the +2 position
                         temp = s[n+1]
 
                         if len(wordlist)==0:
@@ -43,7 +54,7 @@ def context(sentence):
                                         wordlist[temp] = value
                                 else:
                                         wordlist[temp] = 1
-                if n < (length-2):
+                if n < (length-2): #check and see there is a word in the +1 position
                         temp = s[n+2]
 
                         if len(wordlist)==0:
@@ -55,25 +66,27 @@ def context(sentence):
                                         wordlist[temp] = value
                                 else:
                                         wordlist[temp] = 1                        
-                cvector[x] = wordlist
+                cvector[word] = wordlist
                 wordlist = {}                  
         return cvector
 
-# This creates the orthographic feature vector
+#Takes a sentence as input
+#returns a dictionary with unique words in the sentence as keys
+#and arrays of tri character orthograpic featuers for values
 def ortho(sentence):
         s = sentence.split(" ")
         length = len(s)
         ofeatures = []
         ovector = {}
-        for n,x in enumerate(s):
-                if x not in ovector:
-                    t = "#"+x+"#"
-                    for i in range(0,len(t)):
-                            z = t[i:i+3]
-                            if len(z) == 3:
-                                ofeatures.append(z)
+        for n,word in enumerate(s): 
+                if word not in ovector:
+                    taggedword = "#"+word+"#"
+                    for i in range(0,len(taggedword)):
+                            trichar = taggedword[i:i+3]
+                            if len(trichar) == 3:
+                                ofeatures.append(trichar)
                 
-                    ovector[x] = ofeatures
+                    ovector[word] = ofeatures
                     ofeatures=[]      
         return ovector
 
