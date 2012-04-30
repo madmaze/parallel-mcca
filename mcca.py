@@ -22,6 +22,7 @@ if __name__ == "__main__":
 	elif opts.genV_flag:
 		print " Entering Vector Generation..."
 		D.genVectors()
+		D.saveVecs()
 	elif opts.run_flag:
 		print " Entering MCCA calculation..."
 		D.runMCCA()
