@@ -40,7 +40,11 @@ class data:
 				if f.find(".processed") > 0:
 					inFile = open(f, "r");
 					for line in inFile.readlines():
-						self.enVecs.buildVector(line)
+						if l == "en":
+							self.enVecs.buildVector(line.strip())
+						elif l == "es":
+							self.esVecs.buildVector(line.strip())
+
 	
 	def preprocess(self):
 		print "in preprocessing().."
