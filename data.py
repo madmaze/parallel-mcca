@@ -10,18 +10,34 @@ import fVectors
 class data:
 	langDirs=[]
 	dataDir=""
+	procDir=""
+	vecSubdir="vecs"
 	test=''
+	enVecs = fVectors.fVectors("en")
+	esVecs = fVectors.fVectors("es")
 	# Constructor 
-	def __init__(self,inputDir,langs):
+	def __init__(self,inputDir,langs,processed):
 		self.test='yes'
 		self.dataDir=inputDir
 		self.langDirs=langs
+		self.procDir=processed
 	
 	def runMCCA(self):
 		print "in MCCA..."
+
+	def genVectors(self):
+		print "in genVectors().."
+		for l in self.langDirs:
+			print l
+			for f in glob.glob(self.procDir + "/"+ l + "/*"):
+				# chop out non input files.. aka readme
+				if f.find(".processed") > 0:
+					inFile = open(f, "r");
+					for line in inFile.readlines():
+						self.enVecs.buildVector(line)
 	
 	def preprocess(self):
-		print "here",self.langDirs
+		print "in preprocessing().."
 		for l in self.langDirs:
 			cnt=0
 			for f in glob.glob(self.dataDir + "/" + l + "/*"):
