@@ -15,6 +15,7 @@ class data:
 	test=''
 	enVecs = fVectors.fVectors("en")
 	esVecs = fVectors.fVectors("es")
+	res={}
 	# Constructor 
 	def __init__(self,inputDir,langs,processed):
 		self.test='yes'
@@ -24,12 +25,35 @@ class data:
 	
 	def runMCCA(self):
 		print "in MCCA..."
+		q=0
+		# iterate over all source words
+		for s in self.enVecs.vector.keys():
+			if q<10 and s != '':
+				print s, len(self.enVecs.vector[s][0]),len(self.enVecs.vector[s][1])
+				print self.enVecs.vector[s][0]
+				print self.enVecs.vector[s][1]
+				print " "
+				pairings={}
+				# iterate over all target words
+				for t in self.esVecs.vector.keys():
+					pairings[t]=(self.compareOrtho(s, t),self.compareContext(s, t))
+					
+				self.res[s]=pairings
+				q+=1
+				
+	def compareOrtho(self, S, T):
+		return 1
+		
+	def compareContext(self, S, T):
+		return 1
 	
 	def saveVecs(self):
 		self.enVecs.saveVectors(self.procDir+"/"+self.vecSubdir)
+		self.esVecs.saveVectors(self.procDir+"/"+self.vecSubdir)
 		
 	def loadVecs(self):
 		self.enVecs.loadVectors(self.procDir+"/"+self.vecSubdir)
+		self.esVecs.loadVectors(self.procDir+"/"+self.vecSubdir)
 
 	def genVectors(self):
 		print "in genVectors().."

@@ -116,7 +116,9 @@ class fVectors:
 
 	
 	def saveVectors(self,dirs):
+		print "saving ",  dirs + "/" + self.lang + ".p"
 		pickle.dump( self.vector, open( dirs + "/" + self.lang + ".p", "wb" ) )
 	
 	def loadVectors(self,dirs):
+		print "loading ",  dirs + "/" + self.lang + ".p"
 		self.vector = pickle.load( open( dirs + "/" + self.lang + ".p", "rb" ) )

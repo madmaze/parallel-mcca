@@ -25,6 +25,7 @@ if __name__ == "__main__":
 		D.saveVecs()
 	elif opts.run_flag:
 		print " Entering MCCA calculation..."
+		D.loadVecs()
 		D.runMCCA()
 	else:
 		print "No option selected..."
