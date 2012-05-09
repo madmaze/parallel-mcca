@@ -8,11 +8,10 @@ import cPickle as pickle
 
 class fVectors:
 	lang=''
-	vector={}
-
 	# Constructor
 	def __init__(self,l):
 		self.lang=l
+		self.vector={}
 
 	def buildVector(self, sentence):
 		# get context vector
@@ -116,7 +115,9 @@ class fVectors:
 
 
 	def saveVectors(self,dirs):
+		print "saving ",  dirs + "/" + self.lang + ".p"
 		pickle.dump( self.vector, open( dirs + "/" + self.lang + ".p", "wb" ) )
 
 	def loadVectors(self,dirs):
+		print "loading ",  dirs + "/" + self.lang + ".p"
 		self.vector = pickle.load( open( dirs + "/" + self.lang + ".p", "rb" ) )
