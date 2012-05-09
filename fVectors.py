@@ -8,11 +8,11 @@ import cPickle as pickle
 
 class fVectors:
 	lang=''
-	vector={}
 	
 	# Constructor
 	def __init__(self,l):
 		self.lang=l
+		self.vector={}
 	
 	def buildVector(self, sentence):
 		# get context vector

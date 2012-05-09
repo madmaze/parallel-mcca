@@ -13,8 +13,6 @@ class data:
 	procDir=""
 	vecSubdir="vecs"
 	test=''
-	enVecs = fVectors.fVectors("en")
-	esVecs = fVectors.fVectors("es")
 	res={}
 	# Constructor 
 	def __init__(self,inputDir,langs,processed):
@@ -22,6 +20,8 @@ class data:
 		self.dataDir=inputDir
 		self.langDirs=langs
 		self.procDir=processed
+		self.enVecs = fVectors.fVectors("en")
+		self.esVecs = fVectors.fVectors("es")
 	
 	def runMCCA(self):
 		print "in MCCA..."
@@ -29,23 +29,29 @@ class data:
 		# iterate over all source words
 		for s in self.enVecs.vector.keys():
 			if q<10 and s != '':
-				print s, len(self.enVecs.vector[s][0]),len(self.enVecs.vector[s][1])
-				print self.enVecs.vector[s][0]
-				print self.enVecs.vector[s][1]
-				print " "
+				#print s, len(self.enVecs.vector[s][0]),len(self.enVecs.vector[s][1])
+				#print self.enVecs.vector[s][0]
+				#print self.enVecs.vector[s][1]
+				#print " "
 				pairings={}
 				# iterate over all target words
 				for t in self.esVecs.vector.keys():
-					pairings[t]=(self.compareOrtho(s, t),self.compareContext(s, t))
+					if t != '':
+						pairings[t]=self.compareVecs(s, t)
 					
 				self.res[s]=pairings
 				q+=1
 				
-	def compareOrtho(self, S, T):
+	def compareVecs(self, S, T):
+		vS,vT = self.joinVecs(S,T)
+		
 		return 1
 		
-	def compareContext(self, S, T):
-		return 1
+	def joinVecs(self, vecA, vecB):
+		print vecA
+		print vecB
+		exit()
+		return combine, combine
 	
 	def saveVecs(self):
 		self.enVecs.saveVectors(self.procDir+"/"+self.vecSubdir)
@@ -62,11 +68,16 @@ class data:
 			for f in glob.glob(self.procDir + "/"+ l + "/*"):
 				# chop out non input files.. aka readme
 				if f.find(".processed") > 0:
+					print f
 					inFile = open(f, "r");
 					for line in inFile.readlines():
 						if l == "en":
+							#print line.strip()
 							self.enVecs.buildVector(line.strip())
+							#print "en"
 						elif l == "es":
+							#print "es"
+							#print line.strip()
 							self.esVecs.buildVector(line.strip())
 
 	
