@@ -37,7 +37,7 @@ class data:
 				# iterate over all target words
 				for t in self.esVecs.vector.keys():
 					if t != '':
-						pairings[t]=self.compareVecs(s, t)
+						pairings[t]=self.compareVecs((s,self.enVecs.vector[s]), (t,self.esVecs.vector[t]))
 					
 				self.res[s]=pairings
 				q+=1
@@ -48,10 +48,37 @@ class data:
 		return 1
 		
 	def joinVecs(self, vecA, vecB):
-		print vecA
-		print vecB
+		#print vecA
+		# unpack vector
+		legend=[]
+		combA=[]
+		combB=[]
+		s, (vAo,vAc) = vecA
+		print s, vAo, vAc
+		t, (vBo,vBc) = vecB
+		print t,vBo,vBc
+		
+		for Ao in vAo:
+			legend.append(Ao)
+			combA.append(1)
+			if Ao in vBo:
+				combB.append(1)
+			else:
+				combB.append(0)
+		
+		for Bo in vBo:
+			if Bo not in legend:
+				legend.append(Bo)
+				combB.append(1)
+				combA.append(0)
+		
+		for i in range(0,len(legend)):
+			print legend[i],combA[i],combB[i]
+			
+		#print vecB
+		
 		exit()
-		return combine, combine
+		return combA, combB
 	
 	def saveVecs(self):
 		self.enVecs.saveVectors(self.procDir+"/"+self.vecSubdir)
