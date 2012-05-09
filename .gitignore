@@ -1,3 +1,6 @@
 *.saveProcessed
 *~
 *.pyc
+*.processed
+*.p
+*.pdf
