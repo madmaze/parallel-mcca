@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 ###############
-# data.py - holds a reference to all the data 
+# data.py - holds a reference to all the data
 ###############
 
 import glob
 import re
 import fVectors
+from nltk.tokenize import word_tokenize, wordpunct_tokenize, sent_tokenize
 
 class data:
 	langDirs=[]
@@ -15,19 +16,19 @@ class data:
 	test=''
 	enVecs = fVectors.fVectors("en")
 	esVecs = fVectors.fVectors("es")
-	# Constructor 
+	# Constructor
 	def __init__(self,inputDir,langs,processed):
 		self.test='yes'
 		self.dataDir=inputDir
 		self.langDirs=langs
 		self.procDir=processed
-	
+
 	def runMCCA(self):
 		print "in MCCA..."
-	
+
 	def saveVecs(self):
 		self.enVecs.saveVectors(self.procDir+"/"+self.vecSubdir)
-		
+
 	def loadVecs(self):
 		self.enVecs.loadVectors(self.procDir+"/"+self.vecSubdir)
 
@@ -45,7 +46,7 @@ class data:
 						elif l == "es":
 							self.esVecs.buildVector(line.strip())
 
-	
+
 	def preprocess(self):
 		print "in preprocessing().."
 		for l in self.langDirs:
@@ -55,64 +56,44 @@ class data:
 				if f.find(".txt") > 0:
 					cnt+=1
 					self.saveProcessed(self.processFile(f),"PROCESSED/"+l+"/"+str(cnt))
-	
+
 			print l, cnt, "input files"
-	
+
 	def cleanText(self,inText):
-		# strip out whatever we need here 
+		# strip out whatever we need here
 		p = re.compile('[,]')
 		outText = p.sub('',inText)
 		return outText
-	
+
 	def saveProcessed(self,data,fname):
 		fout = open(fname+".processed", "w")
 		for line in data:
 			#print line
 			fout.write(line+"\n")
-			
-	
+
+
 	def processFile(self,fname):
 		print "processing:",fname
 		f = open(fname, "r");
 		lines=""
 		for line in f.readlines():
 			lines+=line.strip()+" "
-		
-		#print lines
-		# split by .
-		lines = self.cleanText(lines).split(". ")
+
+		lines = self.cleanText(lines)
 		tmp=[]
-		
-		# split by ?
-		for l in lines:
-			tmp += l.split("? ")
-	
+
+		wordpunct_tokenize(lines)
+		tmp+=[word_tokenize(t) for t in sent_tokenize(lines)]
 		lines=tmp[:]
 		tmp=[]
-		
-		# split by !
+		print lines
+
+#		p2 = re.compile('[?.,"\'\[\]:;]')
 		for l in lines:
-			tmp += l.split("! ")
-		
-		lines=tmp[:]
-		tmp=[]	
-		
-		# split by !
-		for l in lines:
-			tmp += l.split('" ')
-		
-		lines=tmp[:]
-		tmp=[]
-		
-		for l in lines:
-			tmp += l.split(' "')
-		
-		lines=tmp[:]
-		tmp=[]
-		p2 = re.compile('[?.,"\']')
-		for l in lines:
-			if l != '':
-				t = p2.sub(' ',l).strip()
-				tmp.append(t)
-				#print t
+			for m in ["?",".",",","\"","\'\'","``","\'","[","]",":",";",":","!"]:
+				x = l.count(m)
+				for i in range(x):
+					l.remove(m)
+		tmp = lines
+		# return lines
 		return tmp[:]
