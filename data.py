@@ -6,6 +6,7 @@
 import glob
 import re
 import fVectors
+import math
 from nltk.tokenize import word_tokenize, wordpunct_tokenize, sent_tokenize
 
 class data:
@@ -29,25 +30,43 @@ class data:
 		q=0
 		# iterate over all source words
 		for s in self.enVecs.vector.keys():
-			if q<10 and s != '':
+			if s != '':
 				#print s, len(self.enVecs.vector[s][0]),len(self.enVecs.vector[s][1])
 				#print self.enVecs.vector[s][0]
 				#print self.enVecs.vector[s][1]
 				#print " "
 				pairings={}
 				# iterate over all target words
+				localMax=0
+				bestMatch=[]
 				for t in self.esVecs.vector.keys():
 					if t != '':
-						pairings[t]=self.compareVecs((s,self.enVecs.vector[s]), (t,self.esVecs.vector[t]))
-
-				self.res[s]=pairings
+						#pairings[t]=self.compareVecs((s,self.enVecs.vector[s]), (t,self.esVecs.vector[t]))
+						r=self.compareVecs((s,self.enVecs.vector[s]), (t,self.esVecs.vector[t]))
+						if r > localMax:
+							localMax=r
+							#bestMatch=((s,self.enVecs.vector[s]), (t,self.esVecs.vector[t]))
+							bestMatch=(s, t)
+				if q%100==0:
+					print q, localMax, bestMatch
+				self.res[s]=(localMax, bestMatch)
 				q+=1
 
 	def compareVecs(self, S, T):
-		vS,vT = self.joinVecs(S,T)
-
-		return 1
-
+		vS,vT,legend = self.joinVecs(S,T)
+		r = self.cosSimilarity(vS,vT)
+		return r
+		
+	def cosSimilarity(self, vecA, vecB):
+		dotProd=0
+		vAsum=0
+		vBsum=0
+		for i in range(0,len(vecA)):
+			dotProd+=vecA[i]*vecB[i]
+			vAsum+=vecA[i]*vecA[i]
+			vBsum+=vecB[i]*vecB[i]
+		return (dotProd/(math.sqrt(vAsum)*math.sqrt(vBsum)))
+			
 	def joinVecs(self, vecA, vecB):
 		#print vecA
 		# unpack vector
@@ -55,10 +74,11 @@ class data:
 		combA=[]
 		combB=[]
 		s, (vAo,vAc) = vecA
-		print s, vAo, vAc
+		#print s, vAo, vAc
 		t, (vBo,vBc) = vecB
-		print t,vBo,vBc
-
+		#print t,vBo,vBc
+		
+		# Build orthographic vector
 		for Ao in vAo:
 			legend.append(Ao)
 			combA.append(1)
@@ -72,14 +92,15 @@ class data:
 				legend.append(Bo)
 				combB.append(1)
 				combA.append(0)
-
-		for i in range(0,len(legend)):
-			print legend[i],combA[i],combB[i]
-
+		# build context vector?
+		
+		#for i in range(0,len(legend)):
+		#	if combA[i]==combB[i]:
+		#		print legend[i],combA[i],combB[i],"<here"
+		#
 		#print vecB
-
-		exit()
-		return combA, combB
+		#exit()
+		return combA, combB, legend
 
 	def saveVecs(self):
 		self.enVecs.saveVectors(self.procDir+"/"+self.vecSubdir)
@@ -130,8 +151,8 @@ class data:
 	def saveProcessed(self,data,fname):
 		fout = open(fname+".processed", "w")
 		for line in data:
-			#print line
-			fout.write(line+"\n")
+			#print type(line)
+			fout.write(" ".join(line)+"\n")
 
 
 	def processFile(self,fname):
@@ -148,7 +169,7 @@ class data:
 		tmp+=[word_tokenize(t) for t in sent_tokenize(lines)]
 		lines=tmp[:]
 		tmp=[]
-		print lines
+		#print lines
 
 #		p2 = re.compile('[?.,"\'\[\]:;]')
 		for l in lines:
