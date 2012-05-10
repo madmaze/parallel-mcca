@@ -160,7 +160,7 @@ class data:
 
 	def processFile(self,fname):
 		print "processing:",fname
-		f = open(fname, "r");
+		f = open(fname, "r")
 		lines=""
 		for line in f.readlines():
 			lines+=line.strip()+" "
