@@ -172,9 +172,7 @@ class data:
 		tmp+=[word_tokenize(t) for t in sent_tokenize(lines)]
 		lines=tmp[:]
 		tmp=[]
-		#print lines
 
-#		p2 = re.compile('[?.,"\'\[\]:;]')
 		for l in lines:
 			for m in ["?",".",",","\"","\'\'","``","\'","[","]",":",";",":","!"]:
 				x = l.count(m)
@@ -189,5 +187,5 @@ class data:
 			for w in s:
 				print w
 				tmp.append(stemmer.stem(w))
-		# print tmp
+
 		return tmp[:]
