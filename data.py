@@ -24,7 +24,7 @@ class data:
 		self.langDirs=langs
 		self.procDir=processed
 		self.enVecs = fVectors.fVectors("en")
-		self.esVecs = fVectors.fVectors("es")
+		self.esVecs = fVectors.fVectors("de")
 
 	def runMCCA(self):
 		print "in MCCA..."
@@ -149,7 +149,16 @@ class data:
 		# strip out whatever we need here
 		p = re.compile('[,]')
 		outText = p.sub('',inText)
-		return outText
+		out=""
+		print "Sanitizing input data..."
+		for w in outText.split(" "):
+			containsUnknown=0
+			for l in w:
+				if ord(l) > 128:
+					containsUnknown=1
+			if containsUnknown == 0:
+				out += " "+w
+		return out
 
 	def saveProcessed(self,data,fname):
 		fout = open(fname+".processed", "w")
@@ -163,9 +172,10 @@ class data:
 		f = open(fname, "r")
 		lines=""
 		for line in f.readlines():
+			#print line.strip()
 			lines+=line.strip()+" "
 
-		lines = self.cleanText(lines)
+		lines = unicode(self.cleanText(lines))
 		tmp=[]
 
 		wordpunct_tokenize(lines)
@@ -183,11 +193,12 @@ class data:
 		tmp = lines
 		lines = tmp[:]
 		tmp = []
-
+		
+		print "stemming... "
 		stemmer = SnowballStemmer("english")
 		for s in lines:
 			for w in s:
-				print w
+				#print w
 				tmp.append(stemmer.stem(w))
 		# print tmp
 		return tmp[:]
