@@ -8,6 +8,7 @@ import re
 import fVectors
 import math
 from nltk.tokenize import word_tokenize, wordpunct_tokenize, sent_tokenize
+from nltk.stem import SnowballStemmer
 
 class data:
 	langDirs=[]
@@ -58,7 +59,7 @@ class data:
 		vS,vT,legend = self.joinVecs(S,T)
 		r = self.cosSimilarity(vS,vT)
 		return r
-		
+
 	def cosSimilarity(self, vecA, vecB):
 		dotProd=0
 		vAsum=0
@@ -68,7 +69,7 @@ class data:
 			vAsum+=vecA[i]*vecA[i]
 			vBsum+=vecB[i]*vecB[i]
 		return (dotProd/(math.sqrt(vAsum)*math.sqrt(vBsum)))
-			
+
 	def joinVecs(self, vecA, vecB):
 		#print vecA
 		# unpack vector
@@ -79,7 +80,7 @@ class data:
 		#print s, vAo, vAc
 		t, (vBo,vBc) = vecB
 		#print t,vBo,vBc
-		
+
 		# Build orthographic vector
 		for Ao in vAo:
 			legend.append(Ao)
@@ -95,7 +96,7 @@ class data:
 				combB.append(1)
 				combA.append(0)
 		# build context vector?
-		
+
 		#for i in range(0,len(legend)):
 		#	if combA[i]==combB[i]:
 		#		print legend[i],combA[i],combB[i],"<here"
@@ -180,5 +181,13 @@ class data:
 				for i in range(x):
 					l.remove(m)
 		tmp = lines
-		# return lines
+		lines = tmp[:]
+		tmp = []
+
+		stemmer = SnowballStemmer("english")
+		for s in lines:
+			for w in s:
+				print w
+				tmp.append(stemmer.stem(w))
+		# print tmp
 		return tmp[:]
