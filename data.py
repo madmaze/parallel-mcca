@@ -30,7 +30,7 @@ class data:
 		q=0
 		# iterate over all source words
 		for s in self.enVecs.vector.keys():
-			if s != '':
+			if q<10 and s != '':
 				#print s, len(self.enVecs.vector[s][0]),len(self.enVecs.vector[s][1])
 				#print self.enVecs.vector[s][0]
 				#print self.enVecs.vector[s][1]
@@ -51,6 +51,8 @@ class data:
 					print q, localMax, bestMatch
 				self.res[s]=(localMax, bestMatch)
 				q+=1
+		for x in sorted(self.res.iteritems(), key=operator.itemgetter(1)):
+			print x, self.res[x]
 
 	def compareVecs(self, S, T):
 		vS,vT,legend = self.joinVecs(S,T)

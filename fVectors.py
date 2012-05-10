@@ -107,8 +107,12 @@ class fVectors:
 			taggedword = "#"+word+"#"
 			for i in range(0,len(taggedword)):
 				trichar = taggedword[i:i+3]
+				bichar = taggedword[i:i+2]
 				if len(trichar) == 3:
 				    ofeatures.append(trichar)
+				if len(bichar) == 2:
+				    ofeatures.append(bichar)
+				ofeatures.append(taggedword[i])
 			ovector[word] = ofeatures
 			ofeatures=[]
 		return ovector
