@@ -185,13 +185,12 @@ class data:
 
 		for l in lines:
 			for m in ["?",".",",","\"","\'\'","``","\'","[","]",":",";",":","!"]:
-				x = l.count(m)
-				for i in range(x):
-					l.remove(m)
+				l = removeAll(l,m)
+			#same for function words
 		tmp = lines
 		lines = tmp[:]
 		tmp = []
-		
+
 		print "stemming... "
 		stemmer = SnowballStemmer("english")
 		for s in lines:
@@ -200,3 +199,9 @@ class data:
 				tmp.append(stemmer.stem(w))
 
 		return tmp[:]
+
+def removeAll(l,token):
+	x = l.count(token)
+	for i in range(x):
+		l.remove(token)
+	return l
