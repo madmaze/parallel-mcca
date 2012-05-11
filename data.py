@@ -192,7 +192,8 @@ class data:
 		#lines = unicode(self.cleanText(lines),'UTF-8')
 		lines = unicode(lines,'UTF-8')
 		tmp=[]
-
+		
+		print "tokenizing..."
 		wordpunct_tokenize(lines)
 		tmp+=[word_tokenize(t) for t in sent_tokenize(lines)]
 		lines=tmp[:]
@@ -228,7 +229,12 @@ class data:
 					,"en","de","del","a","para","por","con"
 					,"si"] #TODO: lookup more spanish prepositions
 		elif lang == "de":
-			bad = [] #TODO: put german pronouns and articles here
+			bad = ["der","die","das","des","deren","ich","du","er","sie","es"
+					,"wir","ihr","es","ein","einen","mein","dein","ihres"
+					,"euer","eurer","eueres","eures","eure","euere","euerer"
+					,"euerem","euerm","eurem","euren","eueren","euern","euch"
+					,"deine","deins","meins","dessen","derer","denen","diesen"
+					,"diesem","meiner","meinem","meinen","ihrem","ihren"] 
 		elif lang == "fr":
 			bad = [] #TODO: put french pronouns and articles here
 		else:
