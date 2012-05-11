@@ -19,17 +19,26 @@ class fVectors:
 		# get context vector
 		cvect = self.context(sentence)
 		# get ortho vector
-		ovect = self.ortho(sentence)
+		# ovect = self.ortho(sentence)
 		# merge into self.vectors
-		for word in ovect:
+		for word in cvect:
 			if word not in self.vector:
-				self.vector[word] = (ovect[word], cvect[word])
+				self.vector[word] = cvect[word]
 			else:
 				for mword in cvect[word].keys():
-					if mword not in self.vector[word][1]:
-						self.vector[word][1][mword] = cvect[word][mword]
+					if mword not in self.vector[word]:
+						self.vector[word][mword] = cvect[word][mword]
 					else:
-						self.vector[word][1][mword] = self.vector[word][1][mword]+cvect[word][mword]
+						self.vector[word][mword] = self.vector[word][mword]+cvect[word][mword]
+	def dumpVec(self):
+		#print self.vector
+		for k in self.vector:
+			print k
+			for w in self.vector[k]:
+				print "\t",w,self.vector[k][w]
+		print "TotalTokens:",self.totalTokens
+		for k in self.totals:
+			print k, self.totals[k]
 		
 	#Takes a sentence as input
 	#Returns a dictionary with unique words in the sentence as keys
