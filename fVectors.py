@@ -68,8 +68,6 @@ class fVectors:
 						wordlist[tmp] = 1
 			cvector[word] = wordlist
 			wordlist = {}
-		print self.totalTokens
-		print self.totals
 		return cvector
 
 	#Takes a sentence as input
