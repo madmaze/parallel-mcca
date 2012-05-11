@@ -237,8 +237,11 @@ class data:
 					,"diesem","meiner","meinem","meinen","ihrem","ihren"] 
 		elif lang == "fr":
 			bad = ["le","la","l'","les","un","une","des","du","de","je","me","moi","tu"
-					,"te","toi","il","elle","on","lui","se","soi","nous","vous",
-					,"ils","elles","leur","eux","celui","celle","ceux","celles"]
+					,"te","toi","il","elle","on","lui","se","soi","nous","vous"
+					,"ils","elles","leur","eux","celui","celle","ceux","celles"
+					,"mon","ma","notre","nos","ton","ta","tes","votre","vos","son"
+					,"sa","ses","leurs","ce","ces","cette","quel","quels","quelle"
+					,"quelles"]
 		else:
 			fail = "you screwed up your languages... find the right stemmer yourself!! cur lang: " + lang
 			exit(fail)
