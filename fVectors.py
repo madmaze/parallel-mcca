@@ -12,83 +12,34 @@ class fVectors:
 	def __init__(self,l):
 		self.lang=l
 		self.vector={}
+		self.totalTokens=0
+		self.totals={}
 
 	def buildVector(self, sentence):
 		# get context vector
 		cvect = self.context(sentence)
 		# get ortho vector
-		ovect = self.ortho(sentence)
+		# ovect = self.ortho(sentence)
 		# merge into self.vectors
-		for word in ovect:
+		for word in cvect:
 			if word not in self.vector:
-				self.vector[word] = (ovect[word], cvect[word])
+				self.vector[word] = cvect[word]
 			else:
 				for mword in cvect[word].keys():
-					if mword not in self.vector[word][1]:
-						self.vector[word][1][mword] = cvect[word][mword]
+					if mword not in self.vector[word]:
+						self.vector[word][mword] = cvect[word][mword]
 					else:
-						self.vector[word][1][mword] = self.vector[word][1][mword]+cvect[word][mword]
-
-
-	def context_old(self,sentence):
-		s=sentence.split(" ")
-		length = len(s)
-		wordlist = {}
-		cvector = {}
-		for n,word in enumerate(s):
-			if word in cvector:
-				wordlist = cvector[word]
-			if n >1:    #check and see there is a word in the -2 position
-				temp = s[n-2]
-
-				if len(wordlist)==0:
-				    wordlist[temp] = 1
-				else:
-				    if (temp) in wordlist:
-					value = wordlist[temp]
-					value = value + 1
-					wordlist[temp] = value
-				    else:
-					wordlist[temp] = 1
-			if n >0:    #check and see there is a word in the -1 position
-				temp = s[n-1]
-
-				if len(wordlist)==0:
-				    wordlist[temp] = 1
-				else:
-				    if (temp) in wordlist:
-					value = wordlist[temp]
-					value = value + 1
-					wordlist[temp] = value
-				    else:
-					wordlist[temp] = 1
-			if n < (length-1):  #check and see there is a word in the +2 position
-				temp = s[n+1]
-
-				if len(wordlist)==0:
-				    wordlist[temp] = 1
-				else:
-				    if (temp) in wordlist:
-					value = wordlist[temp]
-					value = value + 1
-					wordlist[temp] = value
-				    else:
-					wordlist[temp] = 1
-			if n < (length-2): #check and see there is a word in the +1 position
-				temp = s[n+2]
-
-				if len(wordlist)==0:
-				    wordlist[temp] = 1
-				else:
-				    if (temp) in wordlist:
-					value = wordlist[temp]
-					value = value + 1
-					wordlist[temp] = value
-				    else:
-					wordlist[temp] = 1
-			cvector[word] = wordlist
-			wordlist = {}
-		return cvector
+						self.vector[word][mword] = self.vector[word][mword]+cvect[word][mword]
+	def dumpVec(self):
+		#print self.vector
+		for k in self.vector:
+			print k
+			for w in self.vector[k]:
+				print "\t",w,self.vector[k][w]
+		print "TotalTokens:",self.totalTokens
+		for k in self.totals:
+			print k, self.totals[k]
+		
 	#Takes a sentence as input
 	#Returns a dictionary with unique words in the sentence as keys
 	#and dictionaries for their values
@@ -99,57 +50,31 @@ class fVectors:
 		length = len(s)
 		wordlist = {}
 		cvector = {}
+		r=3
 		for n,word in enumerate(s):
+			# keep track of words
+			if word in self.totals:
+				self.totals[word]+=1
+			else:
+				self.totals[word]=1
+			self.totalTokens+=1
+				
 			if word in cvector:
 				wordlist = cvector[word]
-			if n >1:    #check and see there is a word in the -2 position
-				temp = s[n-2]
-
-				if len(wordlist)==0:
-				    wordlist[temp] = 1
-				else:
-				    if (temp) in wordlist:
-					value = wordlist[temp]
-					value = value + 1
-					wordlist[temp] = value
-				    else:
-					wordlist[temp] = 1
-			if n >0:    #check and see there is a word in the -1 position
-				temp = s[n-1]
-
-				if len(wordlist)==0:
-				    wordlist[temp] = 1
-				else:
-				    if (temp) in wordlist:
-					value = wordlist[temp]
-					value = value + 1
-					wordlist[temp] = value
-				    else:
-					wordlist[temp] = 1
-			if n < (length-1):  #check and see there is a word in the +2 position
-				temp = s[n+1]
-
-				if len(wordlist)==0:
-				    wordlist[temp] = 1
-				else:
-				    if (temp) in wordlist:
-					value = wordlist[temp]
-					value = value + 1
-					wordlist[temp] = value
-				    else:
-					wordlist[temp] = 1
-			if n < (length-2): #check and see there is a word in the +1 position
-				temp = s[n+2]
-
-				if len(wordlist)==0:
-				    wordlist[temp] = 1
-				else:
-				    if (temp) in wordlist:
-					value = wordlist[temp]
-					value = value + 1
-					wordlist[temp] = value
-				    else:
-					wordlist[temp] = 1
+			
+			for i in range(-r,r+1):
+				#print n+i, i
+				if n+i >= 0 and n+i < length and i != 0:
+					tmp=s[n+i]
+					if len(wordlist)==0:
+					    wordlist[tmp] = 1
+					else:
+					    if (tmp) in wordlist:
+						value = wordlist[tmp]
+						value = value + 1
+						wordlist[tmp] = value
+					    else:
+						wordlist[tmp] = 1
 			cvector[word] = wordlist
 			wordlist = {}
 		return cvector
