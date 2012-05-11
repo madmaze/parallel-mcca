@@ -197,18 +197,43 @@ class data:
 		tmp+=[word_tokenize(t) for t in sent_tokenize(lines)]
 		lines=tmp[:]
 		tmp=[]
-		#print lines
 
-#		p2 = re.compile('[?.,"\'\[\]:;]')
+		print "removing punctuation and function words... "
+		#TODO: add other function words -> if/then/else, etc
+		if lang == "en":
+			bad = ["he","she","it","I","you"
+					,"they","we"
+					,"him","her","me"
+					,"them","us"
+					,"his","her","my","your"
+					,"their","our"
+					,"hers","mine","yours"
+					,"thers","ours"
+					,"a","an","the"]
+		elif lang == "es":
+			bad = ["el","ella","usted","yo","tu"
+					,"ellos","ellas","ustedes","nosotros","vosotros"
+					,"le","la","te","me"
+					,"les","las","nos","vos"
+					,"un","una","el","la"
+					,"unos","unas","los","las"]
+		elif lang == "de":
+			bad = [] #TODO: put german pronouns and articles here
+		elif lang == "fr":
+			bad = [] #TODO: put french pronouns and articles here
+		else:
+			bad = []
+
 		for l in lines:
 			for m in ["?",".",",","\"","\'\'","``","\'","[","]",":",";",":","!"]:
-				x = l.count(m)
-				for i in range(x):
-					l.remove(m)
+				l = removeAll(l,m)
+			for n in bad:
+				l = removeAll(l,n)
+
 		tmp = lines
 		lines = tmp[:]
 		tmp = []
-		
+
 		print "stemming... "
 		if lang == "en":
 			stemmer = SnowballStemmer("english")
@@ -221,10 +246,16 @@ class data:
 		else:
 			fail = "you screwed up your languages... find the right stemmer yourself!! cur lang: " + lang
 			exit(fail)
-			
+
 		for s in lines:
 			for w in s:
 				#print w
 				tmp.append(stemmer.stem(w))
-		# print tmp
+
 		return tmp[:]
+
+def removeAll(l,token):
+	x = l.count(token)
+	for i in range(x):
+		l.remove(token)
+	return l
