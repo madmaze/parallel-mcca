@@ -183,10 +183,38 @@ class data:
 		lines=tmp[:]
 		tmp=[]
 
+		print "removing punctuation and function words... "
+		#TODO: add other function words -> if/then/else, etc
+		if lang == "en":
+			bad = ["he","she","it","I","you"
+					,"they","we"
+					,"him","her","me"
+					,"them","us"
+					,"his","her","my","your"
+					,"their","our"
+					,"hers","mine","yours"
+					,"thers","ours"
+					,"a","an","the"]
+		elif lang == "es":
+			bad = ["el","ella","usted","yo","tu"
+					,"ellos","ellas","ustedes","nosotros","vosotros"
+					,"le","la","te","me"
+					,"les","las","nos","vos"
+					,"un","una","el","la"
+					,"unos","unas","los","las"]
+		elif lang == "de":
+			bad = [] #TODO: put german pronouns and articles here
+		elif lang == "fr":
+			bad = [] #TODO: put french pronouns and articles here
+		else:
+			bad = []
+
 		for l in lines:
 			for m in ["?",".",",","\"","\'\'","``","\'","[","]",":",";",":","!"]:
 				l = removeAll(l,m)
-			#same for function words
+			for n in bad:
+				l = removeAll(l,n)
+
 		tmp = lines
 		lines = tmp[:]
 		tmp = []
@@ -203,7 +231,7 @@ class data:
 		else:
 			fail = "you screwed up your languages... find the right stemmer yourself!! cur lang: " + lang
 			exit(fail)
-			
+
 		for s in lines:
 			for w in s:
 				#print w
