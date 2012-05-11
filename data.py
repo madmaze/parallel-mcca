@@ -141,7 +141,7 @@ class data:
 				# chop out non input files.. aka readme
 				if f.find(".txt") > 0:
 					cnt+=1
-					self.saveProcessed(self.processFile(f),"PROCESSED/"+l+"/"+str(cnt))
+					self.saveProcessed(self.processFile(f,l),"PROCESSED/"+l+"/"+str(cnt))
 
 			print l, cnt, "input files"
 
@@ -167,7 +167,7 @@ class data:
 			fout.write(" ".join(line)+"\n")
 
 
-	def processFile(self,fname):
+	def processFile(self,fname,lang):
 		print "processing:",fname
 		f = open(fname, "r")
 		lines=""
@@ -192,7 +192,18 @@ class data:
 		tmp = []
 
 		print "stemming... "
-		stemmer = SnowballStemmer("english")
+		if lang == "en":
+			stemmer = SnowballStemmer("english")
+		elif lang == "es":
+			stemmer = SnowballStemmer("spanish")
+		elif lang == "de":
+			stemmer = SnowballStemmer("german")
+		elif lang == "fr":
+			stemmer = SnowballStemmer("french")
+		else:
+			fail = "you screwed up your languages... find the right stemmer yourself!! cur lang: " + lang
+			exit(fail)
+			
 		for s in lines:
 			for w in s:
 				#print w
