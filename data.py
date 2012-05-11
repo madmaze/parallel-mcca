@@ -169,7 +169,7 @@ class data:
 		fout = open(fname+".processed", "w")
 		for line in data:
 			#print type(line)
-			fout.write(" ".join(line.encode('UTF-8'))+"\n")
+			fout.write((" ".join(line)).encode('UTF-8')+"\n")
 
 
 	def processFile(self,fname,lang):
@@ -261,10 +261,11 @@ class data:
 			exit(fail)
 
 		for s in lines:
+			ltmp=[]
 			for w in s:
 				#print w
-				tmp.append(stemmer.stem(w))
-
+				ltmp.append(stemmer.stem(w))
+			tmp.append(ltmp)
 		return tmp[:]
 
 def removeAll(l,token):
