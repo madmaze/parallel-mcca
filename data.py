@@ -152,19 +152,24 @@ class data:
 		out=""
 		print "Sanitizing input data..."
 		for w in outText.split(" "):
-			containsUnknown=0
-			for l in w:
-				if ord(l) > 128:
-					containsUnknown=1
-			if containsUnknown == 0:
+			try:
+				t=unicode(w,'UTF-8')
 				out += " "+w
+			except:
+				print w, " not included"
+			#containsUnknown=0
+			#for l in w:
+			#	if ord(l) > 128:
+			#		containsUnknown=1
+			#if containsUnknown == 0:
+			#	out += " "+w
 		return out
 
 	def saveProcessed(self,data,fname):
 		fout = open(fname+".processed", "w")
 		for line in data:
 			#print type(line)
-			fout.write(" ".join(line)+"\n")
+			fout.write(" ".join(line.encode('UTF-8'))+"\n")
 
 
 	def processFile(self,fname,lang):
@@ -173,9 +178,19 @@ class data:
 		lines=""
 		for line in f.readlines():
 			#print line.strip()
-			lines+=line.strip()+" "
+			try:
+				trash=unicode(line.strip(),'UTF-8')
+				lines+=line.strip()+" "
+			except:
+				for w in line.strip().split(" "):
+					try:
+						trash = unicode(w,'UTF-8')
+						lines += w + " "
+					except:
+						print w, " not included"
 
-		lines = unicode(self.cleanText(lines))
+		#lines = unicode(self.cleanText(lines),'UTF-8')
+		lines = unicode(lines,'UTF-8')
 		tmp=[]
 
 		wordpunct_tokenize(lines)
