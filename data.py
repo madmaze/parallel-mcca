@@ -199,7 +199,7 @@ class data:
 		tmp=[]
 
 		print "removing punctuation and function words... "
-		#TODO: add other function words -> if/then/else, etc
+		#TODO: move to text files, add prepostions/particles/etc
 		if lang == "en":
 			bad = ["he","she","it","I","you"
 					,"they","we"
@@ -208,15 +208,25 @@ class data:
 					,"his","her","my","your"
 					,"their","our"
 					,"hers","mine","yours"
-					,"thers","ours"
-					,"a","an","the"]
+					,"theirs","ours"
+					,"a","an","the"
+					,"and","either","or","but","neither","nor"
+					,"in","of","to","on","for","with","by","before","after"
+					,"if","then","else","thus","well","however","therefore"]
 		elif lang == "es":
 			bad = ["el","ella","usted","yo","tu"
 					,"ellos","ellas","ustedes","nosotros","vosotros"
 					,"le","la","te","me"
 					,"les","las","nos","vos"
+					,"su","mi","tu"
+					,"nuestra","nuestro"
+					,"sus","mis","tus"
+					,"nuestras","nuestros"
 					,"un","una","el","la"
-					,"unos","unas","los","las"]
+					,"unos","unas","los","las"
+					,"y","o","pero","despues"
+					,"en","de","del","a","para","por","con"
+					,"si"] #TODO: lookup more spanish prepositions
 		elif lang == "de":
 			bad = [] #TODO: put german pronouns and articles here
 		elif lang == "fr":
