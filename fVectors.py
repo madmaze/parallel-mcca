@@ -213,3 +213,48 @@ class fVectors:
 			#normalize
 			for word2 in self.vector[word1]:
 				self.vector[word1][word2] /= total
+
+	def cleanupVector(self):
+		#remove uncommon words
+		for word1 in self.vector.keys():
+			if self.totals[word1] < 100:
+				del self.vector[word1]
+
+		if self.lang == "fr":
+			filename = "french.1.part"
+		elif self.lang == "de":
+			filename = "german.1.part"
+		elif self.lang == "es":
+			filename = "spanish.1.part"
+		else:
+			return
+
+		base = []
+		f = open(filename, 'r')
+		lines = f.readlines().strip()
+		entries = map(split,lines)
+		for e in entries:
+			base.append(e[1].strip()) #second entry in line
+
+		#remove words not in base lexicon
+		for word1 in self.vector:
+			for word2 in self.vector[word1].keys():
+				if word2 not in base:
+					del self.vector[word1][word2]
+
+	def cleanEnglishVector(self,filename):
+		if self.lang != "en":
+			print "why are you pruning a non-english vector by a different language?"
+			return
+		base = []
+		f = open(filename, 'r')
+		lines = f.readlines().strip()
+		entries = map(split,lines)
+		for e in entries:
+			base.append(e[0].strip()) #first entry on line
+
+		#remove words not in base lexicon
+		for word1 in self.vector:
+			for word2 in self.vector[word1].keys():
+				if word2 not in base:
+					del self.vector[word1][word2]
