@@ -12,6 +12,8 @@ class fVectors:
 	def __init__(self,l):
 		self.lang=l
 		self.vector={}
+		self.totalTokens=0
+		self.totals={}
 
 	def buildVector(self, sentence):
 		# get context vector
@@ -41,6 +43,13 @@ class fVectors:
 		cvector = {}
 		r=3
 		for n,word in enumerate(s):
+			# keep track of words
+			if word in self.totals:
+				self.totals[word]+=1
+			else:
+				self.totals[word]=1
+			self.totalTokens+=1
+				
 			if word in cvector:
 				wordlist = cvector[word]
 			
@@ -59,6 +68,8 @@ class fVectors:
 						wordlist[tmp] = 1
 			cvector[word] = wordlist
 			wordlist = {}
+		print self.totalTokens
+		print self.totals
 		return cvector
 
 	#Takes a sentence as input
