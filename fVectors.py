@@ -185,3 +185,31 @@ class fVectors:
 	def loadVectors(self,dirs):
 		print "loading ",  dirs + "/" + self.lang + ".p"
 		self.vector = pickle.load( open( dirs + "/" + self.lang + ".p", "rb" ) )
+
+	def transfromVector(self):
+		for word1 in self.vector:
+			total = 0
+			for word2 in self.vector[word1]:
+				#calculate log liklihood
+				k11 = self.vector[word1][word2]
+				k12 = self.totals[word1] - k11
+				k21 = self.totals[word2] - k11
+				k22 = self.totalTokens - self.totals[word1] - self.totals[word2]
+
+				n = k11 + k12 + k21 + k22
+				c1 = k11 + k12
+				c2 = k21 + k22
+				r1 = k11 + k21
+				r2 = k12 + k22
+
+				self.vector[word1][word2] = \
+					k11 * log((k11 * n)/(c1 * r1)) \
+					+ k12 * log((k12 * n)/(c1 * r2)) \
+					+ k21 * log((k21 * n)/(c2 * r1)) \
+					+ k22 * log((k22 * n)/(c2 * r2))
+
+				total += self.vector[word1][word2]
+
+			#normalize
+			for word2 in self.vector[word1]:
+				self.vector[word1][word2] /= total
