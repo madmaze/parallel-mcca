@@ -28,67 +28,6 @@ class fVectors:
 						self.vector[word][1][mword] = cvect[word][mword]
 					else:
 						self.vector[word][1][mword] = self.vector[word][1][mword]+cvect[word][mword]
-
-
-	def context_old(self,sentence):
-		s=sentence.split(" ")
-		length = len(s)
-		wordlist = {}
-		cvector = {}
-		for n,word in enumerate(s):
-			if word in cvector:
-				wordlist = cvector[word]
-			if n >1:    #check and see there is a word in the -2 position
-				temp = s[n-2]
-
-				if len(wordlist)==0:
-				    wordlist[temp] = 1
-				else:
-				    if (temp) in wordlist:
-					value = wordlist[temp]
-					value = value + 1
-					wordlist[temp] = value
-				    else:
-					wordlist[temp] = 1
-			if n >0:    #check and see there is a word in the -1 position
-				temp = s[n-1]
-
-				if len(wordlist)==0:
-				    wordlist[temp] = 1
-				else:
-				    if (temp) in wordlist:
-					value = wordlist[temp]
-					value = value + 1
-					wordlist[temp] = value
-				    else:
-					wordlist[temp] = 1
-			if n < (length-1):  #check and see there is a word in the +2 position
-				temp = s[n+1]
-
-				if len(wordlist)==0:
-				    wordlist[temp] = 1
-				else:
-				    if (temp) in wordlist:
-					value = wordlist[temp]
-					value = value + 1
-					wordlist[temp] = value
-				    else:
-					wordlist[temp] = 1
-			if n < (length-2): #check and see there is a word in the +1 position
-				temp = s[n+2]
-
-				if len(wordlist)==0:
-				    wordlist[temp] = 1
-				else:
-				    if (temp) in wordlist:
-					value = wordlist[temp]
-					value = value + 1
-					wordlist[temp] = value
-				    else:
-					wordlist[temp] = 1
-			cvector[word] = wordlist
-			wordlist = {}
-		return cvector
 		
 	#Takes a sentence as input
 	#Returns a dictionary with unique words in the sentence as keys
