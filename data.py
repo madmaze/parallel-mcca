@@ -236,9 +236,13 @@ class data:
 					,"deine","deins","meins","dessen","derer","denen","diesen"
 					,"diesem","meiner","meinem","meinen","ihrem","ihren"] 
 		elif lang == "fr":
-			bad = [] #TODO: put french pronouns and articles here
+			bad = ["le","la","l'","les","un","une","des","du","de","je","me","moi","tu"
+					,"te","toi","il","elle","on","lui","se","soi","nous","vous",
+					,"ils","elles","leur","eux","celui","celle","ceux","celles"]
 		else:
-			bad = []
+			fail = "you screwed up your languages... find the right stemmer yourself!! cur lang: " + lang
+			exit(fail)
+			
 
 		for l in lines:
 			for m in ["?",".",",","\"","\'\'","``","\'","[","]",":",";",":","!"]:
