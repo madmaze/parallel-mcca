@@ -266,24 +266,27 @@ class fVectors:
 			tmp = e.strip().split("\t")
 			#print tmp
 			if tmp[1] in self.vector:
-				base[tmp[1]]=self.vector[tmp[1]]
+				base[tmp[1]]=self.vector[tmp[1]] #base[word] = {word->double}
 				print "here", base[tmp[1]]
 		#so, now base has testword->{foreignword->number} for each testword in dictionary
 		#now, we need to translate each foreignword to english (using lang.1.part), to facilitate comparisons
 		f.close()
-		f.open(filename2, 'r')
+		f = open(filename2, 'r')
 		for l in f.readlines():
 			lines.append(l.strip())
-		lines = map(split,map(strip,lines)) #[[english,foreign]]
+		tmp = []
+		for l in lines:
+			tmp.append(l.strip().split()) #tmp = [[english,german]]
+		lines = tmp
 		entries = {}
 		for l in lines:
-			entries[l[1]] = l[0]
+			entries[l[1]] = l[0] #entries[dictionary-german] = english
 		testvect = {}
-		for w1 in base:
+		for w1 in base: #base = {word->{word->double}}
 			final = {}
-			for w2 in w1:
-				final[entries[w2]] = w1[w2]
+			for w2 in base[w1]:
+				final[w2[:2] + entries[w2[2:]]] = base[w1][w2]
 			testvect[w1] = final
 
-		#testvect = foriegn_test_word -> {englishword -> number}
+		#testvect = foriegn_test_word -> {n_englishword -> number}
 		self.vector = testvect

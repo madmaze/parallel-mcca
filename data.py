@@ -29,7 +29,7 @@ class data:
 	def runMCCA(self):
 		print "in MCCA..."
 		self.esVecs.getTestVectors("german.2.part")
-		
+
 
 	def compareVecs(self, S, T):
 		vS,vT,legend = self.joinVecs(S,T)
@@ -115,7 +115,7 @@ class data:
 		self.esVecs.cleanupVector()
 		self.enVecs.transfromVector()
 		self.esVecs.transfromVector()
-		self.esVecs.getTestVectors("DICT/german.2.part","DICT/german.1.part")
+		self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
 
 	def preprocess(self):
 		print "in preprocessing().."
