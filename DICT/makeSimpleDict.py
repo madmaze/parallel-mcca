@@ -67,7 +67,7 @@ for fname in glob.glob("./*"):
 			f3 = open(lang+".3.part", "w")
 			for l in lines:
 				s,t=l
-				if s.find("_") or t.find("_"):
+				if s.find("_")!=-1 or t.find("_")!=-1:
 					print "skipping",s,t
 				else:
 					#print s,t

@@ -28,32 +28,9 @@ class data:
 
 	def runMCCA(self):
 		print "in MCCA..."
-		q=0
-		# iterate over all source words
-		for s in self.enVecs.vector.keys():
-			if q<10 and s != '':
-				#print s, len(self.enVecs.vector[s][0]),len(self.enVecs.vector[s][1])
-				#print self.enVecs.vector[s][0]
-				#print self.enVecs.vector[s][1]
-				#print " "
-				pairings={}
-				# iterate over all target words
-				localMax=0
-				bestMatch=[]
-				for t in self.esVecs.vector.keys():
-					if t != '':
-						#pairings[t]=self.compareVecs((s,self.enVecs.vector[s]), (t,self.esVecs.vector[t]))
-						r=self.compareVecs((s,self.enVecs.vector[s]), (t,self.esVecs.vector[t]))
-						if r > localMax:
-							localMax=r
-							#bestMatch=((s,self.enVecs.vector[s]), (t,self.esVecs.vector[t]))
-							bestMatch=(s, t)
-				if q%100==0:
-					print q, localMax, bestMatch
-				self.res[s]=(localMax, bestMatch)
-				q+=1
-		for x in sorted(self.res.iteritems(), key=operator.itemgetter(1)):
-			print x, self.res[x]
+		
+		self.esVecs.getTestVectors("./DICT/german.2.part")
+		
 
 	def compareVecs(self, S, T):
 		vS,vT,legend = self.joinVecs(S,T)
@@ -134,11 +111,11 @@ class data:
 							#print line.strip()
 							self.esVecs.buildVector(line.strip())
 		
-		self.enVecs.cleanupVector()
-		self.enVecs.cleanEnglishVector("./DICT/german.1.part")
+		#self.enVecs.cleanupVector()
+		#self.enVecs.cleanEnglishVector("./DICT/german.1.part")
 		self.esVecs.cleanupVector()
-		self.enVecs.transfromVector()
-		self.esVecs.transfromVector()
+		#self.enVecs.transfromVector()
+		#self.esVecs.transfromVector()
 
 
 	def preprocess(self):

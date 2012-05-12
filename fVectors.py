@@ -139,11 +139,11 @@ class fVectors:
 						r2 = float(k12 + k22)
 						
 						if 0 == k12:
-							print "deleting this one w2.. ",k11,k12,k21,k22, word1,self.totals[word1], word2[2:], self.totals[word2[2:]]," co-occur:",self.vector[word1][word2]
+							#print "deleting this one w2.. ",k11,k12,k21,k22, word1,self.totals[word1], word2[2:], self.totals[word2[2:]]," co-occur:",self.vector[word1][word2]
 							del self.vector[word1]
 							raise breakWord1
 						elif 0 == k21:
-							print "deleting this one w2.. ",k11,k12,k21,k22, word1,self.totals[word1], word2[2:], self.totals[word2[2:]]," co-occur:",self.vector[word1][word2]
+							#print "deleting this one w2.. ",k11,k12,k21,k22, word1,self.totals[word1], word2[2:], self.totals[word2[2:]]," co-occur:",self.vector[word1][word2]
 							del self.vector[word1][word2]
 							raise breakWord2
 							
@@ -173,9 +173,14 @@ class fVectors:
 					
 			except breakWord1:
 				pass
+		for w1 in self.vector:
+			print w1
+			for w2 in self.vector[w1]:
+				print "\t",w2
 
 	def cleanupVector(self):
 		print "cleaning foreign vector...."
+		
 		#remove uncommon words
 		for word1 in self.vector.keys():
 			if self.totals[word1] < 100:
@@ -196,17 +201,38 @@ class fVectors:
 		for l in f.readlines():
 			lines+=l.strip()
 		
-		print lines
-		print type(lines)
+		#print lines
+		#print type(lines)
 		entries = lines.split()
 		for e in entries:
 			base.append(e[1].strip()) #second entry in line
-
+		
+		'''
 		#remove words not in base lexicon
 		for word1 in self.vector:
 			for word2 in self.vector[word1].keys():
 				if word2[2:] not in base:
+					del self.vector[word1][word2]'''
+		todel=[]
+		
+		#remove words not in base lexicon
+		for word1 in self.vector:
+			print "inner vec len:",len(self.vector[word1])
+			for word2 in self.vector[word1].keys():
+				if word2[2:] not in base:
 					del self.vector[word1][word2]
+					#todel.append((word1,word2))
+		
+		#for w1,w2 in todel:
+		#	print w1, w2
+		#	#del self.vector[w1][w2]
+		
+		for w1 in self.vector:
+			print w1
+			for w2 in self.vector[w1]:
+				print "\t",w2
+		
+		
 
 	def cleanEnglishVector(self,filename):
 		print "cleaning english vector...."
@@ -234,6 +260,33 @@ class fVectors:
 				if word2[2:] not in base:
 					#del self.vector[word1][word2]
 					todel.append((word1,word2))
+		for w1 in self.vector:
+			print w1
+			for w2 in self.vector[w1]:
+				print "\t",w2
 		for w1,w2 in todel:
+			print w1,w2
 			del self.vector[w1][w2]
+			
+		
+
+	def getTestVectors(self,filename):
+		print "get Test Vectors...."
+		base = {}
+		lines = []
+		f = open(filename, 'r')
+		for l in f.readlines():
+			lines.append(l.strip())
+		
+		# only keep what in dictionary
+		entries = lines
+		for e in entries:
+			tmp = e.strip().split("\t")
+			#print tmp
+			if tmp[1] in self.vector:
+				
+				base[tmp[1]]=self.vector[tmp[1]]
+				print "here", base[tmp[1]]
+		
+		
 
