@@ -112,10 +112,10 @@ class data:
 							self.esVecs.buildVector(line.strip())
 		
 		self.enVecs.cleanupVector()
-		self.enVecs.cleanEnglishVector("./DICT/german.1.part")
+		self.enVecs.cleanEnglishVector("german.1.part")
 		self.esVecs.cleanupVector()
-		#self.enVecs.transfromVector()
-		#self.esVecs.transfromVector()
+		self.enVecs.transfromVector()
+		self.esVecs.transfromVector()
 
 
 	def preprocess(self):

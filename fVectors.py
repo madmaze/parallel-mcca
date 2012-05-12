@@ -173,10 +173,6 @@ class fVectors:
 					
 			except breakWord1:
 				pass
-		for w1 in self.vector:
-			print w1
-			for w2 in self.vector[w1]:
-				print "\t",w2
 
 	def cleanupVector(self):
 		print "cleaning foreign vector...."
@@ -199,39 +195,21 @@ class fVectors:
 		lines = ""
 		f = open('./DICT/'+filename, 'r')
 		for l in f.readlines():
-			lines+=l.strip()
-		
-		#print lines
-		#print type(lines)
-		entries = lines.split()
-		for e in entries:
-			base.append(e[1].strip()) #second entry in line
-		
-		'''
+			bits=l.strip().split("\t")
+			if len(bits)==2:
+				base.append(bits[1])
+
+		todel=[]	
 		#remove words not in base lexicon
 		for word1 in self.vector:
-			for word2 in self.vector[word1].keys():
+			#print "inner vec len:",len(self.vector[word1])
+			sys.stderr.write(".")
+			for word2 in self.vector[word1]:
 				if word2[2:] not in base:
-					del self.vector[word1][word2]'''
-		todel=[]
+					todel.append((word1,word2))
 		
-		#remove words not in base lexicon
-		for word1 in self.vector:
-			print "inner vec len:",len(self.vector[word1])
-			for word2 in self.vector[word1].keys():
-				if word2[2:] not in base:
-					del self.vector[word1][word2]
-					#todel.append((word1,word2))
-		
-		#for w1,w2 in todel:
-		#	print w1, w2
-		#	#del self.vector[w1][w2]
-		
-		for w1 in self.vector:
-			print w1
-			for w2 in self.vector[w1]:
-				print "\t",w2
-		
+		for w1,w2 in todel:
+			del self.vector[w1][w2]
 		
 
 	def cleanEnglishVector(self,filename):
@@ -239,35 +217,28 @@ class fVectors:
 		if self.lang != "en":
 			print "why are you pruning a non-english vector by a different language?"
 			return
+			
 		base = []
 		lines = ""
-		f = open(filename, 'r')
+		f = open('./DICT/'+filename, 'r')
 		for l in f.readlines():
-			lines+=l.strip()
+			bits=l.strip().split("\t")
+			if len(bits)==2:
+				base.append(bits[1])
 		
-		print lines
-		print type(lines)
-		entries = lines.split()
-		for e in entries:
-			base.append(e[0].strip()) #first entry on line
 		
 		print "vector len:",len(self.vector)
 		todel=[]
 		#remove words not in base lexicon
 		for word1 in self.vector:
-			print "inner vec len:",len(self.vector[word1])
+			#print "cleanEng inner vec len:",len(self.vector[word1])
+			sys.stderr.write(".")
 			for word2 in self.vector[word1]:
 				if word2[2:] not in base:
-					#del self.vector[word1][word2]
 					todel.append((word1,word2))
-		for w1 in self.vector:
-			print w1
-			for w2 in self.vector[w1]:
-				print "\t",w2
+		
 		for w1,w2 in todel:
-			print w1,w2
 			del self.vector[w1][w2]
-			
 		
 
 	def getTestVectors(self,filename):
