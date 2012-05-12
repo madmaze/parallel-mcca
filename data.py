@@ -111,8 +111,8 @@ class data:
 							#print line.strip()
 							self.esVecs.buildVector(line.strip())
 		
-		#self.enVecs.cleanupVector()
-		#self.enVecs.cleanEnglishVector("./DICT/german.1.part")
+		self.enVecs.cleanupVector()
+		self.enVecs.cleanEnglishVector("./DICT/german.1.part")
 		self.esVecs.cleanupVector()
 		#self.enVecs.transfromVector()
 		#self.esVecs.transfromVector()
