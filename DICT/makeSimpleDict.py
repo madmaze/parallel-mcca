@@ -67,14 +67,17 @@ for fname in glob.glob("./*"):
 			f3 = open(lang+".3.part", "w")
 			for l in lines:
 				s,t=l
-				#print s,t
-				r=random.randint(1,7)
-				if r < 5:
-					f1.write(s.encode('UTF-8')+"\t"+t.encode('UTF-8')+"\n")
-				if r ==6:
-					f2.write(s.encode('UTF-8')+"\t"+t.encode('UTF-8')+"\n")
-				if r ==7:
-					f3.write(s.encode('UTF-8')+"\t"+t.encode('UTF-8')+"\n")
+				if s.find("_") or t.find("_"):
+					print "skipping",s,t
+				else:
+					#print s,t
+					r=random.randint(1,7)
+					if r < 5:
+						f1.write(s.encode('UTF-8')+"\t"+t.encode('UTF-8')+"\n")
+					if r ==6:
+						f2.write(s.encode('UTF-8')+"\t"+t.encode('UTF-8')+"\n")
+					if r ==7:
+						f3.write(s.encode('UTF-8')+"\t"+t.encode('UTF-8')+"\n")
 			f1.close()
 			f2.close()
 			f3.close()
