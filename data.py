@@ -23,8 +23,8 @@ class data:
 		self.dataDir=inputDir
 		self.langDirs=langs
 		self.procDir=processed
-		self.enVecs = fVectors.fVectors("en")
-		self.esVecs = fVectors.fVectors("de")
+		self.enVecs = fVectors.fVectors(langs[0])
+		self.esVecs = fVectors.fVectors(langs[1])
 
 	def runMCCA(self):
 		print "in MCCA..."
