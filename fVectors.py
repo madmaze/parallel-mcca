@@ -40,7 +40,7 @@ class fVectors:
 		print "TotalTokens:",self.totalTokens
 		for k in self.totals:
 			print k, self.totals[k]
-		
+
 	#Takes a sentence as input
 	#Returns a dictionary with unique words in the sentence as keys
 	#and dictionaries for their values
@@ -59,10 +59,10 @@ class fVectors:
 			else:
 				self.totals[word]=1
 			self.totalTokens+=1
-				
+
 			if word in cvector:
 				wordlist = cvector[word]
-			
+
 			for i in range(-r,r+1):
 				#print n+i, i
 				if n+i >= 0 and n+i < length and i != 0:
@@ -111,16 +111,16 @@ class fVectors:
 	def loadVectors(self,dirs):
 		print "loading ",  dirs + "/" + self.lang + ".p"
 		self.vector = pickle.load( open( dirs + "/" + self.lang + ".p", "rb" ) )
-		
-	
-	
+
+
+
 	def transfromVector(self):
 		class breakWord1( Exception ):
 			pass
 
 		class breakWord2( Exception ):
 			pass
-		
+
 		for word1 in self.vector.keys():
 			total = 0
 			try:
@@ -131,13 +131,13 @@ class fVectors:
 						k12 = float(self.totals[word1] - k11)
 						k21 = float(self.totals[word2[2:]] - k11)
 						k22 = float(self.totalTokens - self.totals[word1] - self.totals[word2[2:]])
-		
+
 						n = float(k11 + k12 + k21 + k22)
 						c1 = float(k11 + k12)
 						c2 = float(k21 + k22)
 						r1 = float(k11 + k21)
 						r2 = float(k12 + k22)
-						
+
 						if 0 == k12:
 							#print "deleting this one w2.. ",k11,k12,k21,k22, word1,self.totals[word1], word2[2:], self.totals[word2[2:]]," co-occur:",self.vector[word1][word2]
 							del self.vector[word1]
@@ -146,15 +146,15 @@ class fVectors:
 							#print "deleting this one w2.. ",k11,k12,k21,k22, word1,self.totals[word1], word2[2:], self.totals[word2[2:]]," co-occur:",self.vector[word1][word2]
 							del self.vector[word1][word2]
 							raise breakWord2
-							
+
 						else:
-							try:	
+							try:
 								self.vector[word1][word2] = \
 									k11 * math.log(float((k11 * n))/(c1 * r1)) \
 									+ k12 * math.log(float((k12 * n))/(c1 * r2)) \
 									+ k21 * math.log(float((k21 * n))/(c2 * r1)) \
 									+ k22 * math.log(float((k22 * n))/(c2 * r2))
-			
+
 								total += self.vector[word1][word2]
 							except:
 								print "ditching this one.. ",k11,k12,k21,k22, word1, word2[2:]
@@ -164,19 +164,19 @@ class fVectors:
 								print float((k22 * n))/(c2 * r2)
 								exit("FAIL!")
 								raise breakWord2
-							
+
 					except breakWord2:
 						pass
 				#normalize
 				for word2 in self.vector[word1]:
 					self.vector[word1][word2] /= total
-					
+
 			except breakWord1:
 				pass
 
 	def cleanupVector(self):
 		print "cleaning foreign vector...."
-		
+
 		#remove uncommon words
 		for word1 in self.vector.keys():
 			if self.totals[word1] < 100:
@@ -199,7 +199,7 @@ class fVectors:
 			if len(bits)==2:
 				base.append(bits[1])
 
-		todel=[]	
+		todel=[]
 		#remove words not in base lexicon
 		for word1 in self.vector:
 			#print "inner vec len:",len(self.vector[word1])
@@ -207,17 +207,17 @@ class fVectors:
 			for word2 in self.vector[word1]:
 				if word2[2:] not in base:
 					todel.append((word1,word2))
-		
+
 		for w1,w2 in todel:
 			del self.vector[w1][w2]
-		
+
 
 	def cleanEnglishVector(self,filename):
 		print "cleaning english vector...."
 		if self.lang != "en":
 			print "why are you pruning a non-english vector by a different language?"
 			return
-			
+
 		base = []
 		lines = ""
 		f = open('./DICT/'+filename, 'r')
@@ -225,8 +225,8 @@ class fVectors:
 			bits=l.strip().split("\t")
 			if len(bits)==2:
 				base.append(bits[1])
-		
-		
+
+
 		print "vector len:",len(self.vector)
 		todel=[]
 		#remove words not in base lexicon
@@ -236,10 +236,10 @@ class fVectors:
 			for word2 in self.vector[word1]:
 				if word2[2:] not in base:
 					todel.append((word1,word2))
-		
+
 		for w1,w2 in todel:
 			del self.vector[w1][w2]
-		
+
 
 	def getTestVectors(self,filename):
 		print "get Test Vectors...."
@@ -248,16 +248,15 @@ class fVectors:
 		f = open(filename, 'r')
 		for l in f.readlines():
 			lines.append(l.strip())
-		
+
 		# only keep what in dictionary
 		entries = lines
 		for e in entries:
 			tmp = e.strip().split("\t")
 			#print tmp
 			if tmp[1] in self.vector:
-				
 				base[tmp[1]]=self.vector[tmp[1]]
 				print "here", base[tmp[1]]
-		
-		
+
+
 

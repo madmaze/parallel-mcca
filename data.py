@@ -28,9 +28,9 @@ class data:
 
 	def runMCCA(self):
 		print "in MCCA..."
-		
+
 		self.esVecs.getTestVectors("./DICT/german.2.part")
-		
+
 
 	def compareVecs(self, S, T):
 		vS,vT,legend = self.joinVecs(S,T)
@@ -92,7 +92,7 @@ class data:
 
 	def genVectors(self):
 		print "in genVectors().."
-		
+
 		for l in self.langDirs:
 			print l
 			for f in glob.glob(self.procDir + "/"+ l + "/*"):
@@ -110,7 +110,7 @@ class data:
 							#print "de"
 							#print line.strip()
 							self.esVecs.buildVector(line.strip())
-		
+
 		self.enVecs.cleanupVector()
 		self.enVecs.cleanEnglishVector("german.1.part")
 		self.esVecs.cleanupVector()
@@ -177,7 +177,7 @@ class data:
 		#lines = unicode(self.cleanText(lines),'UTF-8')
 		lines = unicode(lines,'UTF-8')
 		tmp=[]
-		
+
 		print "tokenizing..."
 		wordpunct_tokenize(lines)
 		tmp+=[word_tokenize(t) for t in sent_tokenize(lines)]
@@ -219,7 +219,7 @@ class data:
 					,"euer","eurer","eueres","eures","eure","euere","euerer"
 					,"euerem","euerm","eurem","euren","eueren","euern","euch"
 					,"deine","deins","meins","dessen","derer","denen","diesen"
-					,"diesem","meiner","meinem","meinen","ihrem","ihren"] 
+					,"diesem","meiner","meinem","meinen","ihrem","ihren"]
 		elif lang == "fr":
 			bad = ["le","la","l'","les","un","une","des","du","de","je","me","moi","tu"
 					,"te","toi","il","elle","on","lui","se","soi","nous","vous"
@@ -230,7 +230,7 @@ class data:
 		else:
 			fail = "you screwed up your languages... find the right stemmer yourself!! cur lang: " + lang
 			exit(fail)
-			
+
 
 		for l in lines:
 			for m in ["?",".",",","\"","\'\'","``","\'","[","]",":",";",":","!"]:
