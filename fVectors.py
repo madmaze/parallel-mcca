@@ -175,7 +175,7 @@ class fVectors:
 				pass
 
 	def cleanupVector(self):
-		print "cleaning foreign vector...."
+		print "cleaning chomping vector...."
 
 		#remove uncommon words
 		for word1 in self.vector.keys():
@@ -191,6 +191,7 @@ class fVectors:
 		else:
 			return
 
+		
 		base = []
 		lines = ""
 		f = open('./DICT/'+filename, 'r')
@@ -202,7 +203,7 @@ class fVectors:
 		todel=[]
 		q=0
 		vlen=len(self.vector)
-		print "vector len:",vlen
+		print "cleaning vector of len:",vlen
 		#remove words not in base lexicon
 		for word1 in self.vector:
 			if q%100==0:
