@@ -200,13 +200,17 @@ class fVectors:
 				base.append(bits[1])
 
 		todel=[]
+		q=0
+		vlen=len(self.vector)
+		print "vector len:",vlen
 		#remove words not in base lexicon
 		for word1 in self.vector:
-			#print "inner vec len:",len(self.vector[word1])
-			sys.stderr.write(".")
+			if q%100==0:
+				print (float(q)/vlen)*100,"%"
 			for word2 in self.vector[word1]:
 				if word2[2:] not in base:
 					todel.append((word1,word2))
+			q+=1
 
 		for w1,w2 in todel:
 			del self.vector[w1][w2]
@@ -227,15 +231,19 @@ class fVectors:
 				base.append(bits[1])
 
 
-		print "vector len:",len(self.vector)
+		
 		todel=[]
+		q=0
+		vlen=len(self.vector)
+		print "vector len:",vlen
 		#remove words not in base lexicon
 		for word1 in self.vector:
-			#print "cleanEng inner vec len:",len(self.vector[word1])
-			sys.stderr.write(".")
+			if q%100==0:
+				print (float(q)/vlen)*100,"%"
 			for word2 in self.vector[word1]:
 				if word2[2:] not in base:
 					todel.append((word1,word2))
+			q+=1
 
 		for w1,w2 in todel:
 			del self.vector[w1][w2]
