@@ -116,7 +116,7 @@ class data:
 		self.esVecs.cleanupVector()
 		self.enVecs.transfromVector()
 		self.esVecs.transfromVector()
-
+		self.esVecs.getTestVectors("DICT/german.2.part","DICT/german.1.part")
 
 	def preprocess(self):
 		print "in preprocessing().."

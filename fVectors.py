@@ -241,7 +241,7 @@ class fVectors:
 			del self.vector[w1][w2]
 
 
-	def getTestVectors(self,filename):
+	def getTestVectors(self,filename,filename2):
 		print "get Test Vectors...."
 		base = {}
 		lines = []
@@ -249,7 +249,7 @@ class fVectors:
 		for l in f.readlines():
 			lines.append(l.strip())
 
-		# only keep what in dictionary
+		# only keep what is in the dictionary
 		entries = lines
 		for e in entries:
 			tmp = e.strip().split("\t")
@@ -257,6 +257,22 @@ class fVectors:
 			if tmp[1] in self.vector:
 				base[tmp[1]]=self.vector[tmp[1]]
 				print "here", base[tmp[1]]
+		#so, now base has testword->{foreignword->number} for each testword in dictionary
+		#now, we need to translate each foreignword to english (using lang.1.part), to facilitate comparisons
+		f.close()
+		f.open(filename2, 'r')
+		for l in f.readlines():
+			lines.append(l.strip())
+		lines = map(split,map(strip,lines)) #[[english,foreign]]
+		entries = {}
+		for l in lines:
+			entries[l[1]] = l[0]
+		testvect = {}
+		for w1 in base:
+			final = {}
+			for w2 in w1:
+				final[entries[w2]] = w1[w2]
+			testvect[w1] = final
 
-
-
+		#testvect = foriegn_test_word -> {englishword -> number}
+		self.vector = testvect
