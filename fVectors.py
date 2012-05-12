@@ -175,6 +175,7 @@ class fVectors:
 				pass
 
 	def cleanupVector(self):
+		print "cleaning foreign vector...."
 		#remove uncommon words
 		for word1 in self.vector.keys():
 			if self.totals[word1] < 100:
@@ -190,32 +191,49 @@ class fVectors:
 			return
 
 		base = []
-		f = open(filename, 'r')
-		lines = f.readlines().strip()
-		entries = map(split,lines)
+		lines = ""
+		f = open('./DICT/'+filename, 'r')
+		for l in f.readlines():
+			lines+=l.strip()
+		
+		print lines
+		print type(lines)
+		entries = lines.split()
 		for e in entries:
 			base.append(e[1].strip()) #second entry in line
 
 		#remove words not in base lexicon
 		for word1 in self.vector:
 			for word2 in self.vector[word1].keys():
-				if word2 not in base:
+				if word2[2:] not in base:
 					del self.vector[word1][word2]
 
 	def cleanEnglishVector(self,filename):
+		print "cleaning english vector...."
 		if self.lang != "en":
 			print "why are you pruning a non-english vector by a different language?"
 			return
 		base = []
+		lines = ""
 		f = open(filename, 'r')
-		lines = f.readlines().strip()
-		entries = map(split,lines)
+		for l in f.readlines():
+			lines+=l.strip()
+		
+		print lines
+		print type(lines)
+		entries = lines.split()
 		for e in entries:
 			base.append(e[0].strip()) #first entry on line
-
+		
+		print "vector len:",len(self.vector)
+		todel=[]
 		#remove words not in base lexicon
 		for word1 in self.vector:
-			for word2 in self.vector[word1].keys():
-				if word2 not in base:
-					del self.vector[word1][word2]
+			print "inner vec len:",len(self.vector[word1])
+			for word2 in self.vector[word1]:
+				if word2[2:] not in base:
+					#del self.vector[word1][word2]
+					todel.append((word1,word2))
+		for w1,w2 in todel:
+			del self.vector[w1][w2]
 

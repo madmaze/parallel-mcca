@@ -126,14 +126,17 @@ class data:
 					for line in inFile.readlines():
 						if l == "en":
 							#print line.strip()
-							print "en"
+							#print "en"
 							self.enVecs.buildVector(line.strip())
 
 						elif l == "de":
-							print "de"
+							#print "de"
 							#print line.strip()
 							self.esVecs.buildVector(line.strip())
-							
+		
+		self.enVecs.cleanupVector()
+		self.enVecs.cleanEnglishVector("./DICT/german.1.part")
+		self.esVecs.cleanupVector()
 		self.enVecs.transfromVector()
 		self.esVecs.transfromVector()
 
