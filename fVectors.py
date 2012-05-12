@@ -175,7 +175,7 @@ class fVectors:
 				pass
 
 	def cleanupVector(self):
-		print "cleaning foreign vector...."
+		print "cleaning chomping vector...."
 
 		#remove uncommon words
 		for word1 in self.vector.keys():
@@ -191,6 +191,7 @@ class fVectors:
 		else:
 			return
 
+
 		base = []
 		lines = ""
 		f = open('./DICT/'+filename, 'r')
@@ -200,13 +201,17 @@ class fVectors:
 				base.append(bits[1])
 
 		todel=[]
+		q=0
+		vlen=len(self.vector)
+		print "cleaning vector of len:",vlen
 		#remove words not in base lexicon
 		for word1 in self.vector:
-			#print "inner vec len:",len(self.vector[word1])
-			sys.stderr.write(".")
+			if q%100==0:
+				print (float(q)/vlen)*100,"%"
 			for word2 in self.vector[word1]:
 				if word2[2:] not in base:
 					todel.append((word1,word2))
+			q+=1
 
 		for w1,w2 in todel:
 			del self.vector[w1][w2]
@@ -227,15 +232,19 @@ class fVectors:
 				base.append(bits[1])
 
 
-		print "vector len:",len(self.vector)
+
 		todel=[]
+		q=0
+		vlen=len(self.vector)
+		print "vector len:",vlen
 		#remove words not in base lexicon
 		for word1 in self.vector:
-			#print "cleanEng inner vec len:",len(self.vector[word1])
-			sys.stderr.write(".")
+			if q%100==0:
+				print (float(q)/vlen)*100,"%"
 			for word2 in self.vector[word1]:
 				if word2[2:] not in base:
 					todel.append((word1,word2))
+			q+=1
 
 		for w1,w2 in todel:
 			del self.vector[w1][w2]
@@ -243,9 +252,11 @@ class fVectors:
 
 	def getTestVectors(self,filename,filename2):
 		print "get Test Vectors...."
+
 		base = {}
 		lines = []
-		f = open(filename, 'r')
+		# read the Dict
+		f = open('./DICT/'+filename, 'r')
 		for l in f.readlines():
 			lines.append(l.strip())
 
