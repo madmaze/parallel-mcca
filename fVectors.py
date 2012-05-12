@@ -3,7 +3,8 @@
 #vectors can then be used to compare words in the data
 #and build a dictionary of words with similar features
 #==============================================================
-import sys;
+import sys
+import math
 import cPickle as pickle
 
 class fVectors:
@@ -67,14 +68,14 @@ class fVectors:
 				if n+i >= 0 and n+i < length and i != 0:
 					tmp=s[n+i]
 					if len(wordlist)==0:
-					    wordlist[tmp] = 1
+					    wordlist[str(i+3)+"_"+tmp] = 1
 					else:
-					    if (tmp) in wordlist:
-						value = wordlist[tmp]
+					    if tmp in wordlist:
+						value = wordlist[str(i+3)+"_"+tmp]
 						value = value + 1
-						wordlist[tmp] = value
+						wordlist[str(i+3)+"_"+tmp] = value
 					    else:
-						wordlist[tmp] = 1
+						wordlist[str(i+3)+"_"+tmp] = 1
 			cvector[word] = wordlist
 			wordlist = {}
 		return cvector
@@ -110,34 +111,68 @@ class fVectors:
 	def loadVectors(self,dirs):
 		print "loading ",  dirs + "/" + self.lang + ".p"
 		self.vector = pickle.load( open( dirs + "/" + self.lang + ".p", "rb" ) )
-
+		
+	
+	
 	def transfromVector(self):
-		for word1 in self.vector:
+		class breakWord1( Exception ):
+			pass
+
+		class breakWord2( Exception ):
+			pass
+		
+		for word1 in self.vector.keys():
 			total = 0
-			for word2 in self.vector[word1]:
-				#calculate log liklihood
-				k11 = self.vector[word1][word2]
-				k12 = self.totals[word1] - k11
-				k21 = self.totals[word2] - k11
-				k22 = self.totalTokens - self.totals[word1] - self.totals[word2]
-
-				n = k11 + k12 + k21 + k22
-				c1 = k11 + k12
-				c2 = k21 + k22
-				r1 = k11 + k21
-				r2 = k12 + k22
-
-				self.vector[word1][word2] = \
-					k11 * log((k11 * n)/(c1 * r1)) \
-					+ k12 * log((k12 * n)/(c1 * r2)) \
-					+ k21 * log((k21 * n)/(c2 * r1)) \
-					+ k22 * log((k22 * n)/(c2 * r2))
-
-				total += self.vector[word1][word2]
-
-			#normalize
-			for word2 in self.vector[word1]:
-				self.vector[word1][word2] /= total
+			try:
+				for word2 in self.vector[word1].keys():
+					try:
+						#calculate log liklihood
+						k11 = float(self.vector[word1][word2])
+						k12 = float(self.totals[word1] - k11)
+						k21 = float(self.totals[word2[2:]] - k11)
+						k22 = float(self.totalTokens - self.totals[word1] - self.totals[word2[2:]])
+		
+						n = float(k11 + k12 + k21 + k22)
+						c1 = float(k11 + k12)
+						c2 = float(k21 + k22)
+						r1 = float(k11 + k21)
+						r2 = float(k12 + k22)
+						
+						if 0 == k12:
+							print "deleting this one w2.. ",k11,k12,k21,k22, word1,self.totals[word1], word2[2:], self.totals[word2[2:]]," co-occur:",self.vector[word1][word2]
+							del self.vector[word1]
+							raise breakWord1
+						elif 0 == k21:
+							print "deleting this one w2.. ",k11,k12,k21,k22, word1,self.totals[word1], word2[2:], self.totals[word2[2:]]," co-occur:",self.vector[word1][word2]
+							del self.vector[word1][word2]
+							raise breakWord2
+							
+						else:
+							try:	
+								self.vector[word1][word2] = \
+									k11 * math.log(float((k11 * n))/(c1 * r1)) \
+									+ k12 * math.log(float((k12 * n))/(c1 * r2)) \
+									+ k21 * math.log(float((k21 * n))/(c2 * r1)) \
+									+ k22 * math.log(float((k22 * n))/(c2 * r2))
+			
+								total += self.vector[word1][word2]
+							except:
+								print "ditching this one.. ",k11,k12,k21,k22, word1, word2[2:]
+								print float((k11 * n))/(c1 * r1)
+								print float((k12 * n))/(c1 * r2)
+								print float((k21 * n))/(c2 * r1)
+								print float((k22 * n))/(c2 * r2)
+								exit("FAIL!")
+								raise breakWord2
+							
+					except breakWord2:
+						pass
+				#normalize
+				for word2 in self.vector[word1]:
+					self.vector[word1][word2] /= total
+					
+			except breakWord1:
+				pass
 
 	def cleanupVector(self):
 		#remove uncommon words
@@ -183,3 +218,4 @@ class fVectors:
 			for word2 in self.vector[word1].keys():
 				if word2 not in base:
 					del self.vector[word1][word2]
+

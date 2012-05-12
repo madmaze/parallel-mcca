@@ -115,6 +115,7 @@ class data:
 
 	def genVectors(self):
 		print "in genVectors().."
+		
 		for l in self.langDirs:
 			print l
 			for f in glob.glob(self.procDir + "/"+ l + "/*"):
@@ -125,12 +126,16 @@ class data:
 					for line in inFile.readlines():
 						if l == "en":
 							#print line.strip()
+							print "en"
 							self.enVecs.buildVector(line.strip())
-							#print "en"
-						elif l == "es":
-							#print "es"
+
+						elif l == "de":
+							print "de"
 							#print line.strip()
 							self.esVecs.buildVector(line.strip())
+							
+		self.enVecs.transfromVector()
+		self.esVecs.transfromVector()
 
 
 	def preprocess(self):
