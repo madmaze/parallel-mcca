@@ -243,21 +243,18 @@ class fVectors:
 
 	def getTestVectors(self,filename):
 		print "get Test Vectors...."
+		
 		base = {}
 		lines = []
-		f = open(filename, 'r')
+		# read the Dict
+		f = open('./DICT/'+filename, 'r')
 		for l in f.readlines():
-			lines.append(l.strip())
-		
-		# only keep what in dictionary
-		entries = lines
-		for e in entries:
-			tmp = e.strip().split("\t")
-			#print tmp
-			if tmp[1] in self.vector:
-				
-				base[tmp[1]]=self.vector[tmp[1]]
-				print "here", base[tmp[1]]
+			# split into src-tgt
+			bits=l.strip().split("\t")
+			if len(bits)==2 and bits[1] in self.vector:
+				# Grab all association vectors that 
+				# we have translations for in the dict
+				base[bits[1]]=self.vector[bits[1]]
 		
 		
 

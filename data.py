@@ -29,7 +29,7 @@ class data:
 	def runMCCA(self):
 		print "in MCCA..."
 		
-		self.esVecs.getTestVectors("./DICT/german.2.part")
+		self.esVecs.getTestVectors("german.2.part")
 		
 
 	def compareVecs(self, S, T):
