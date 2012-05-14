@@ -160,11 +160,6 @@ class data:
 		print "processing:",fname
 		f = open(fname, "r")
 		lines=""
-		q=0
-		q2=0
-		q3=0
-		q1=0
-		q4=0
 		allines=[l.strip() for l in f.readlines()]
 		lines1=" ".join(allines)
 		try:
