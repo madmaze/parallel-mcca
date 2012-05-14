@@ -160,7 +160,10 @@ class data:
 		print "processing:",fname
 		f = open(fname, "r")
 		lines=""
-		for line in f.readlines():
+		q=0
+		allines=f.readlines()
+		llen=len(allines)
+		for line in allines:
 			#print line.strip()
 			try:
 				trash=unicode(line.strip(),'UTF-8')
@@ -178,6 +181,9 @@ class data:
 							#print w, " its iso-8859-1"
 						except:
 							print w, " Its on UTF-8 nor ISO-8859-1 (giving up)"
+			q+=1
+			if q%5000==0 and q != 0:
+				print (float(q)/llen)*100,"%"
 
 		#lines = unicode(self.cleanText(lines),'UTF-8')
 		#lines #= unicode(lines,'UTF-8')
