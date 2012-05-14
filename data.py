@@ -291,7 +291,10 @@ class data:
 			ltmp=[]
 			for w in s:
 				#print w
-				ltmp.append(stemmer.stem(w))
+				try:
+					ltmp.append(stemmer.stem(w))
+				except:
+					print "cant stem this string",w
 			tmp.append(ltmp)
 		return tmp[:]
 
