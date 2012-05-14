@@ -161,6 +161,10 @@ class data:
 		f = open(fname, "r")
 		lines=""
 		q=0
+		q2=0
+		q3=0
+		q1=0
+		q4=0
 		allines=f.readlines()
 		llen=len(allines)
 		for line in allines:
@@ -169,21 +173,29 @@ class data:
 				trash=unicode(line.strip(),'UTF-8')
 				lines+=line.strip()+" "
 			except:
-				for w in line.strip().split(" "):
-					try:
-						trash = unicode(w,'UTF-8')
-						lines += trash + " "
-					except:
-						#print w, " UTF-8 failed"
+				q1+=1
+				try:
+					trash = unicode(line.strip(),'iso-8859-1')
+					lines += trash + " "
+				except:
+					q4+=1
+					for w in line.strip().split(" "):
 						try:
-							trash = unicode(w,'iso-8859-1')
+							q2+=1
+							trash = unicode(w,'UTF-8')
 							lines += trash + " "
-							#print w, " its iso-8859-1"
 						except:
-							print w, " Its on UTF-8 nor ISO-8859-1 (giving up)"
+							#print w, " UTF-8 failed"
+							try:
+								q3+=1
+								trash = unicode(w,'iso-8859-1')
+								lines += trash + " "
+								#print w, " its iso-8859-1"
+							except:
+								print w, " Its on UTF-8 nor ISO-8859-1 (giving up)"
 			q+=1
 			if q%5000==0 and q != 0:
-				print (float(q)/llen)*100,"%"
+				print (float(q)/llen)*100,"%",q1,q4,q2,q3
 
 		#lines = unicode(self.cleanText(lines),'UTF-8')
 		#lines #= unicode(lines,'UTF-8')
