@@ -28,8 +28,8 @@ class data:
 
 	def runMCCA(self):
 		print "in MCCA..."
-		self.esVecs.getTestVectors("german.2.part")
-
+		#self.esVecs.getTestVectors("german.2.part")
+		self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
 
 	def compareVecs(self, S, T):
 		vS,vT,legend = self.joinVecs(S,T)
@@ -169,12 +169,18 @@ class data:
 				for w in line.strip().split(" "):
 					try:
 						trash = unicode(w,'UTF-8')
-						lines += w + " "
+						lines += trash + " "
 					except:
-						print w, " not included"
+						#print w, " UTF-8 failed"
+						try:
+							trash = unicode(w,'iso-8859-1')
+							lines += trash + " "
+							#print w, " its iso-8859-1"
+						except:
+							print w, " Its on UTF-8 nor ISO-8859-1 (giving up)"
 
 		#lines = unicode(self.cleanText(lines),'UTF-8')
-		lines = unicode(lines,'UTF-8')
+		#lines #= unicode(lines,'UTF-8')
 		tmp=[]
 
 		print "tokenizing..."
