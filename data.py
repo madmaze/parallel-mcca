@@ -165,7 +165,7 @@ class data:
 		q3=0
 		q1=0
 		q4=0
-		allines=f.readlines()
+		allines=[l.strip() for l in f.readlines()]
 		lines1=" ".join(allines)
 		try:
 			lines=unicode(lines1.strip(),'UTF-8')
