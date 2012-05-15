@@ -6,6 +6,7 @@
 import glob
 import re
 import fVectors
+import parallelmcca
 import math
 from nltk.tokenize import word_tokenize, wordpunct_tokenize, sent_tokenize
 from nltk.stem import SnowballStemmer
@@ -29,7 +30,8 @@ class data:
 	def runMCCA(self):
 		print "in MCCA..."
 		#self.esVecs.getTestVectors("german.2.part")
-		self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
+		tVec = self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
+		print tVec
 
 	def compareVecs(self, S, T):
 		vS,vT,legend = self.joinVecs(S,T)
@@ -116,7 +118,39 @@ class data:
 		self.enVecs.transfromVector()
 		self.esVecs.transfromVector()
 		#self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
+		
+	def genVectorsGPU(self):
+		print "in genVectorsGPU().."
+		g=parallelmcca.gpuProcessor()
+		'''for l in self.langDirs:
+			print l
+			for f in glob.glob(self.procDir + "/"+ l + "/*"):
+				# chop out non input files.. aka readme
+				if f.find(".processed") > 0:
+					print f
+					inFile = open(f, "r");
+					for line in inFile.readlines():
+						if l == "en":
+							#print line.strip()
+							#print "en"
+							self.enVecs.buildVector(line.strip())
 
+						elif l == "de":
+							#print "de"
+							#print line.strip()
+							self.esVecs.buildVector(line.strip())
+		'''
+		#self.enVecs.cleanupVector()
+		#self.enVecs.cleanEnglishVector("german.1.part")
+		#self.esVecs.cleanupVector()
+		#self.saveVecs()
+		self.loadVecs()
+		#self.enVecs.transfromVector()
+		#self.esVecs.transfromVector()
+		#self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
+		iVec=self.enVecs.returnVec()
+		#res=g.doParallelTransform(iVec)
+		
 	def preprocess(self):
 		print "in preprocessing().."
 		for l in self.langDirs:
