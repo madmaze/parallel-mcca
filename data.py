@@ -23,13 +23,13 @@ class data:
 		self.dataDir=inputDir
 		self.langDirs=langs
 		self.procDir=processed
-		self.enVecs = fVectors.fVectors("en")
-		self.esVecs = fVectors.fVectors("de")
+		self.enVecs = fVectors.fVectors(langs[0])
+		self.esVecs = fVectors.fVectors(langs[1])
 
 	def runMCCA(self):
 		print "in MCCA..."
-		self.esVecs.getTestVectors("german.2.part")
-
+		#self.esVecs.getTestVectors("german.2.part")
+		self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
 
 	def compareVecs(self, S, T):
 		vS,vT,legend = self.joinVecs(S,T)
@@ -115,7 +115,7 @@ class data:
 		self.esVecs.cleanupVector()
 		self.enVecs.transfromVector()
 		self.esVecs.transfromVector()
-		self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
+		#self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
 
 	def preprocess(self):
 		print "in preprocessing().."
@@ -160,21 +160,54 @@ class data:
 		print "processing:",fname
 		f = open(fname, "r")
 		lines=""
-		for line in f.readlines():
-			#print line.strip()
+		allines=[l.strip() for l in f.readlines()]
+		lines1=" ".join(allines)
+		try:
+			lines=unicode(lines1.strip(),'UTF-8')
+			print "UTF-8 succeeded"
+		except:
+			print "UTF-8 failed"
 			try:
-				trash=unicode(line.strip(),'UTF-8')
-				lines+=line.strip()+" "
+				lines=unicode(lines1.strip(),'iso-8859-1')
+				print "iso-8859-1 succeeded"
 			except:
-				for w in line.strip().split(" "):
+				print "iso-8859-1 failed"
+				llen=len(allines)
+				for line in allines:
+					#print line.strip()
 					try:
-						trash = unicode(w,'UTF-8')
-						lines += w + " "
+						trash=unicode(line.strip(),'UTF-8')
+						lines+=trash+" "
 					except:
-						print w, " not included"
+						q1+=1
+						try:
+							trash = unicode(line.strip(),'iso-8859-1')
+							lines += trash + " "
+						except:
+							q4+=1
+							for w in line.strip().split(" "):
+								try:
+									q2+=1
+									trash = unicode(w,'UTF-8')
+									lines += trash + " "
+								except:
+									#print w, " UTF-8 failed"
+									try:
+										q3+=1
+										trash = unicode(w,'iso-8859-1')
+										lines += trash + " "
+										#print w, " its iso-8859-1"
+									except:
+										print w, " Its on UTF-8 nor ISO-8859-1 (giving up)"
+					q+=1
+					if q%5000==0 and q != 0:
+						print (float(q)/llen)*100,"%",q1,q4,q2,q3
 
 		#lines = unicode(self.cleanText(lines),'UTF-8')
-		lines = unicode(lines,'UTF-8')
+		#lines #= unicode(lines,'UTF-8')
+		if lines.find("\n")>0:
+			print "WARNING!!!!",lines.find("\n"), lines[lines.find("\n")-10:lines.find("\n")+10]
+			exit()
 		tmp=[]
 
 		print "tokenizing..."
@@ -258,7 +291,10 @@ class data:
 			ltmp=[]
 			for w in s:
 				#print w
-				ltmp.append(stemmer.stem(w))
+				try:
+					ltmp.append(stemmer.stem(w))
+				except:
+					print "cant stem this string",w
 			tmp.append(ltmp)
 		return tmp[:]
 
