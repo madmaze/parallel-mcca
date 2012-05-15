@@ -296,19 +296,22 @@ class fVectors:
 		print type(self.vector)
 		legend=[]
 		allVec=[]
+		maxLen=0
 		for w1 in self.vector:
-			print type(self.vector[w1])
+			#print type(self.vector[w1])
 			#print self.vector[w1]
 			curLeg=[]
 			curVec=[]
 			for w2 in self.vector[w1]:
 				curLeg.append(w2)
 				curVec.append(self.vector[w1][w2])
+			if len(curVec)>maxLen:
+				maxLen=len(curVec)
 			legend.append((w1,curLeg))
 			allVec.append(curVec)
-			print "legend:",legend
-			print ""
-			print "allVec:",allVec
-			exit()
-			
+			#print "legend:",legend
+			#print ""
+			#print "allVec:",allVec
+			#exit()
+		print maxLen
 		return self.vector

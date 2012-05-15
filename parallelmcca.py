@@ -6,7 +6,7 @@ from pycuda.compiler import SourceModule
 import numpy
 class gpuProcessor:
 	def doParallelTransform(self,inArray):
-		
+		#https://github.com/compmem/cutools/blob/master/gpustruct.py
 		a = numpy.array()
 		
 		a_gpu = cuda.mem_alloc(a.size * a.dtype.itemsize)
