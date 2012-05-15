@@ -148,8 +148,8 @@ class data:
 		#self.enVecs.transfromVector()
 		#self.esVecs.transfromVector()
 		#self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
-		iVec=self.enVecs.returnVec()
-		res=g.doParallelTransform(iVec)
+		iVec,corpSize=self.enVecs.returnVec()
+		res=g.doParallelTransform(iVec,1450)
 		
 	def preprocess(self):
 		print "in preprocessing().."

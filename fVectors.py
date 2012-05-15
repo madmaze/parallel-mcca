@@ -314,4 +314,4 @@ class fVectors:
 			#print "allVec:",allVec
 			#exit()
 		print maxLen
-		return self.vector
+		return self.vector, self.totalTokens
