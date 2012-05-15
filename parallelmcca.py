@@ -7,32 +7,50 @@ import numpy
 class gpuProcessor:
 	def doParallelTransform(self,inArray):
 		#https://github.com/compmem/cutools/blob/master/gpustruct.py
-		a = numpy.array()
+		a = numpy.array([[10.0,15.0,5.0],
+				[10.0,15.0,6.0],
+				[10.0,15.0,7.0],
+				[10.0,15.0,5.0]],numpy.float32)
 		
 		a_gpu = cuda.mem_alloc(a.size * a.dtype.itemsize)
+		dest = numpy.zeros_like(a)
+		dest_gpu = cuda.mem_alloc(a.size * a.dtype.itemsize)
 		
 		cuda.memcpy_htod(a_gpu, a)
 		
 		mod = SourceModule("""
-		    __global__ void doublify(float *a)
+		    __global__ void doublify(float *dest, float *a, float cSize)
 		    {
-		      int idx = threadIdx.x + threadIdx.y*4;
-		      a[idx] *= 2;
+		      int tid = threadIdx.x * 3;
+
+		      float k11 = a[tid+3];
+		      float k12 = a[tid+2] - k11;
+		      float k21 = a[tid+1] - k11;
+		      float k22 = cSize - a[tid+2] - a[tid+1];
+		      float C1 = k11 + k12;
+		      float C2 = k21 + k22;
+		      float R1 = k11 + k21;
+		      float R2 = k12 + k22;
+		      float N = k11 + k12 + k21 + k22;
+		      
+		      dest[tid] = k11*log((k11*N)/(C1*R1));// + k12*log((k12*N)/(C1*R2)) + k21*log((k21*N)/(C2*R1)) + k22*log((k22*N)/(C2*R2));
 		    }
 		    """)
 		
 		func = mod.get_function("doublify")
-		func(a_gpu, block=(4,4,1))
+		cSize=1450
+		func(dest_gpu,a_gpu,cSize, block=(4,1,1))
 		
 		a_doubled = numpy.empty_like(a)
-		cuda.memcpy_dtoh(a_doubled, a_gpu)
+		cuda.memcpy_dtoh(dest, dest_gpu)
+		
 		print "original array:"
 		print a
 		print "doubled with kernel:"
-		print a_doubled
+		print dest
 		
 		# alternate kernel invocation -------------------------------------------------
-		
+		'''
 		func(cuda.InOut(a), block=(4, 4, 1))
 		print "doubled with InOut:"
 		print a
@@ -47,3 +65,4 @@ class gpuProcessor:
 		print a_gpu
 		print "doubled with gpuarray:"
 		print a_doubled
+		'''
