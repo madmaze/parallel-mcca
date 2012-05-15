@@ -8,16 +8,36 @@
 
 \section{Introduction}
 % Describes problem & proposed solution
+% Their thing runs slowly, and would go a lot faster in parallel. :D
 
 \section{Approach}
 % Basic Outline
+% Languages: French, German, Spanish
+% Data Sources (Copuses, Base Lexicon, Test Words)
+% Preprocessing
+% Build Vectors
+% Run tests
 
 \section{Co-occurrence Counting}
 % Explain Cooccurrence and why we need it
+% using window size = 3; word order matters
+
+%Context Vectors, using cooccurrence:
+The goal is to end up with a set of vectors representing a
+corpus. Each vector represents the context that one word (that appeared in the
+corpus) appears in. The vector is composed of (word,number) mappings. Each
+mapping represents the number of times the word being mapped occurs in a
+window around the word the vector is describing. We used a window size of
+three, so each word in the vector appeared in the three words before or the
+three words after the word being described.
 
 \section{Association Vector}
+% take a context vector
+% prune to base lexicon
+% normalize
 
 \section{Vector Similarity}
+% seems almost too simple to get its own section...
 % Equation (City Block Distance)
 
 \section{Parallelizing Vector Calculations}
@@ -25,6 +45,7 @@
 \section{Results}
 
 \section{Conclustions}
+Everything is awesome. Especially Tesla.
 
 \section{Acknowledgments}
 
