@@ -10,6 +10,7 @@ import parallelmcca
 import math
 from nltk.tokenize import word_tokenize, wordpunct_tokenize, sent_tokenize
 from nltk.stem import SnowballStemmer
+import cPickle as pickle
 
 class data:
 	langDirs=[]
@@ -84,12 +85,18 @@ class data:
 		return combA, combB, legend
 
 	def saveVecs(self):
-		self.enVecs.saveVectors(self.procDir+"/"+self.vecSubdir)
-		self.esVecs.saveVectors(self.procDir+"/"+self.vecSubdir)
+		dirs=self.procDir+"/"+self.vecSubdir
+		pickle.dump( self.enVecs, open( dirs + "/" + "en" + "_All.p", "wb" ) )
+		#self.enVecs.saveVectors(self.procDir+"/"+self.vecSubdir)
+		pickle.dump( self.esVecs, open( dirs + "/" + "es" + "_All.p", "wb" ) )
+		#self.esVecs.saveVectors(self.procDir+"/"+self.vecSubdir)
 
 	def loadVecs(self):
-		self.enVecs.loadVectors(self.procDir+"/"+self.vecSubdir)
-		self.esVecs.loadVectors(self.procDir+"/"+self.vecSubdir)
+		dirs=self.procDir+"/"+self.vecSubdir
+		self.enVecs = pickle.load( open( dirs + "/" + "en" + "_All.p", "rb" ) )
+		#self.enVecs.loadVectors(self.procDir+"/"+self.vecSubdir)
+		self.esVecs = pickle.load( open( dirs + "/" + "es" + "_All.p", "rb" ) )
+		#self.esVecs.loadVectors(self.procDir+"/"+self.vecSubdir)
 
 	def genVectors(self):
 		print "in genVectors().."
@@ -139,17 +146,17 @@ class data:
 							#print "de"
 							#print line.strip()
 							self.esVecs.buildVector(line.strip())
-		'''
-		#self.enVecs.cleanupVector()
-		#self.enVecs.cleanEnglishVector("german.1.part")
-		#self.esVecs.cleanupVector()
-		#self.saveVecs()
+		
+		self.enVecs.cleanupVector()
+		self.enVecs.cleanEnglishVector("german.1.part")
+		self.esVecs.cleanupVector()
+		self.saveVecs()'''
 		self.loadVecs()
 		#self.enVecs.transfromVector()
 		#self.esVecs.transfromVector()
 		#self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
 		iVec,corpSize=self.enVecs.returnVec()
-		res=g.doParallelTransform(iVec,1450)
+		res=g.doParallelTransform(iVec,corpSize)
 		
 	def preprocess(self):
 		print "in preprocessing().."
