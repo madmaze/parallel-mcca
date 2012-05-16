@@ -1,4 +1,9 @@
 \documentclass[12pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage[pdftex]{graphicx}
+\usepackage{fancyvrb,relsize}
+\usepackage{amssymb,amsmath}
 
 \title{Parallelizing Automatic Identification of Word Translations from Unrelated Corpora}
 \author{Leah Hanson, Matthias Lee, Mike Weinberger}
@@ -40,40 +45,19 @@ To create each corpora we had to preprocess the Project Gutenberg books to strip
 and prepositions, then segmented the corpora into sentences and words using the Python NLTK's default splitters. Next we stemmed all the words in each corpora and dictionaries using the Python NLTK's SnowballStemmer (for the appropriate
 language).
 
-After preprocessing each corpus, we built co-occurence vectors. Each of these was then transformed into an association vector. Once we had association vectors to represent the words in each corpus, we were ready to attempt the translations.
+After preprocessing each corpus and dictionary, we constructed co-occurence vectors which we then cleaned and trimmed to remove noise and save memory. Each of these was then transformed into an association vector. Once we had association vectors to represent the words in each corpus, we were ready to attempt the translations.
 
 %TODO: did we remove words that occured fewer than 100 times? at what stage?
 
-From the target language corpora, we pulled out the association vectors
-representing test words. Since each of those vectors is already in terms of
-words in the base lexicon, we used the base lexicon to translate each word into
-English, so that the vectors would be in the same space as their English counter
-parts.
+From the foreign language corpus, we pulled out the association vectors representing test words from our test dictionary. Since each of those vectors is already described in terms of words of the base lexicon, we used the base lexicon to translate each "association word" into English, so that the vectors would be in the same space as their English counter parts.
 
-Each target langauge vector then gets compared with each English word vector,
-using the City Block Distance as the comparision. For each target language word,
-the English word with the closest association vector is chosen as the
-translation.
+Next we can calculate the distanc between each foreign word vector and each English(source) word vector by calculating a simple Euclidian distance metric, the City-Block distance, the sum of each absolute element wise distance. For each foreign language word, the English word with the shortest City-Block distance is chosen as the best translation.
 
 \subsection{Co-occurrence Counting}
 
-The goal is to end up with a set of vectors representing a corpus. Each vector
-represents the context that one word (that appeared in the corpus) appeared in.
-The vector is composed of (word,number) mappings. Each mapping represents the
-number of times the word being mapped occurs in a window around the word the
-vector is describing.
-
-We used a window size of three, so each word in the
-vector appeared in the three words before or the three words after the word
-being described.
-
-Rather than using the default of just putting all co-occurrences within the
-window in one vector, we made position within the matter. To do this, the
-final vector is created from six separate vectors: one for each position in
-the window. For example, one of the six vectors would represent the words that
-occur two words before the target word. In practice, we just prepended each
-word with a number to represent which position it was found in, so the keys of
-the dictionary differentiate between the positions.
+The goal is to end up with a set of vectors representing a the co-occurences between all words with in our corpus. Each vector
+represents the context that one word (that appeared in the corpus) appeared in. This can be though of as counting how many times word A appears within some given distance $w$ from word B. Based on Rapp's research we chose $w=3$, meaning for every word B we count all words, from word B's position -3 to +3. These vectors are composed of \{word B : (word A,number)\} mappings. Each mapping represents the number of times a certain word A has co-occured around word B within the range $w$. As suggested by \cite{rapp1999automatic}, we also kept track of the distance between word A and word B in our mappings. We handled this by prefixing the mapping of each word A with its original position in context. This better captures the relation between the co-occurring words. For each of the six position within our $w$-sized window, we first generate a separate vector and then collapse them into one to creat a vector of size six. For example, one of the six vectors would represent the words that
+occur two words before the target word. In practice, we just prepended each word with a number to represent which position it was found in, so the keys of the dictionary differentiate between the positions.
 
 \subsection{Association Vector}
 % take a context vector
@@ -81,41 +65,39 @@ the dictionary differentiate between the positions.
 % convert values
 % normalize
 
-Turning a co-occurrence vector into an association vector is actually fairly
-straight-forward. For each vector, remove all words that are not in the base
-lexicon. At this point, use a fancy formula to convert each raw count into an
-association value.  Then, normalize the values so that each vector sums to
-one.
+Turning a co-occurrence vector into an association vector is fairly straight-forward. For each vector, we remove all words that are not in out base lexicon. We do this to endup with a vector that can be fully described in terms of the relations provided by the base lexicon. At this point, we apply an optimized log-likelihood ration formula presented in Rapp's original paper. (\emph{ see equation \ref{loglike}}). After we have calculated our association vectors, we normalize each vector to one.
 
-To convert a raw co-occurrence count into an association value, you need: the
-count, the total number of times the word this context vector represents was
-seen, the number of times this word was seen, and the total number of word
-tokens in the corpus.
+To convert a raw co-occurrence count into an association value, you need: the count, the total number of times the word this context vector represents was seen, the number of times this word was seen, and the total number of word tokens in the corpus.
 
-\begin{description}
-\item[$k_{11}$ =] frequency of common occurrence of word A and word B
-\item[$k_{12}$ =] corpus frequency of word A $- k_{11}$
-\item[$k_{21}$ =] corpus frequency of word B $- k_{11}$
-\item[$k_{22}$ =] size of corpus (in tokens) - corpus frequency of A - corpus frequency of B
-\item[$C_1$ =] $k_{11} + k_{12}$
-\item[$C_2$ =] $k_{21} + k_{22}$
-\item[$R_1$ =] $k_{11} + k_{21}$
-\item[$R_2$ =] $k_{12} + k_{22}$
-\item[$N$ =] $k_{11} + k_{12} + k_{21} + k_{22}$
-\item[New Value = ]
-    $k_{11}\log\frac{k_{11}N}{C_1R_1} +
-    k_{12}\log\frac{k_{12}N}{C_1R_2} +
-    k_{21}\log\frac{k_{21}N}{C_2R_1} +
-    k_{22}\log\frac{k_{22}N}{C_2R_2}$
-\end{description}
+\begin{figure}
+$k_{11} =$ frequency of common occurrence of word A and word B \\
+$k_{12} =$ corpus frequency of word $A - k_{11}$ \\
+$k_{21} =$ corpus frequency of word $B - k_{11}$ \\
+$k_{22} =$ size of corpus (in tokens) - corpus freq. of A - corpus freq. of B \\
+
+$C_1$ = $k_{11} + k_{12}$ 
+$C_2$ = $k_{21} + k_{22}$ \\
+$R_1$ = $k_{11} + k_{21}$ 
+$R_2$ = $k_{12} + k_{22}$ \\
+$N$ = $k_{11} + k_{12} + k_{21} + k_{22}$ \\
+
+New Value $ = k_{11}\log\frac{k_{11}N}{C_1R_1} +  k_{12}\log\frac{k_{12}N}{C_1R_2} +$ \\
+ $\hspace{20pt} k_{21}\log\frac{k_{21}N}{C_2R_1} +  k_{22}\log\frac{k_{22}N}{C_2R_2}$ \\
+  \caption{Optimized log-likelihood ration formula.}
+  \label{loglike}
+\end{figure}
 
 
 \subsection{Vector Similarity}
 
-To compare to vectors (U and V), we just calculat the City Block Distance.
+Now that we have association vectors, we can calculate the similarity between two vectors by simply calculating a Euclidian "City-Block" distance, which is the . \emph{ see equation \ref{cityblock}}) 
 
-City Block Distance:
+
+\begin{figure}
 $$\sum_{i\in U,V} |U_i - V_i| $$
+\caption{City-Block distance}
+  \label{cityblock}
+\end{figure}
 
 \section{Parallelizing Vector Calculations}
 
@@ -131,10 +113,6 @@ It went faster. :D %We hope.
 Everything is awesome. Especially Tesla.
 %Probably need results to draw conclusions....
 
-\section{Acknowledgments}
-
-% TODO: how do I citations? :|
-%citations go here: the source paper, mainly.
 \bibliography{paper}
 \bibliographystyle{plain}
 \end{document}
