@@ -27,6 +27,11 @@ class data:
 		self.procDir=processed
 		self.enVecs = fVectors.fVectors(langs[0])
 		self.esVecs = fVectors.fVectors(langs[1])
+		self.gpuFlag=0
+		
+	def setGPU(self):
+		print "running with GPU support.."
+		self.gpuFlag=1
 
 	def runMCCA(self):
 		print "in MCCA..."
@@ -122,41 +127,35 @@ class data:
 		self.enVecs.cleanupVector()
 		self.enVecs.cleanEnglishVector("german.1.part")
 		self.esVecs.cleanupVector()
-		self.enVecs.transfromVector()
-		self.esVecs.transfromVector()
+		
 		#self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
 		
-	def genVectorsGPU(self):
+	def transformVecs(self):
 		print "in genVectorsGPU().."
 		g=parallelmcca.gpuProcessor()
-		'''for l in self.langDirs:
-			print l
-			for f in glob.glob(self.procDir + "/"+ l + "/*"):
-				# chop out non input files.. aka readme
-				if f.find(".processed") > 0:
-					print f
-					inFile = open(f, "r");
-					for line in inFile.readlines():
-						if l == "en":
-							#print line.strip()
-							#print "en"
-							self.enVecs.buildVector(line.strip())
-
-						elif l == "de":
-							#print "de"
-							#print line.strip()
-							self.esVecs.buildVector(line.strip())
 		
-		self.enVecs.cleanupVector()
-		self.enVecs.cleanEnglishVector("german.1.part")
-		self.esVecs.cleanupVector()
-		self.saveVecs()'''
-		self.loadVecs()
-		#self.enVecs.transfromVector()
-		#self.esVecs.transfromVector()
+		if self.gpuFlag:
+			print "transforming Vectors using GPU.."
+			# English
+			iVec,corpSize=self.enVecs.returnVec()
+			res=g.doParallelTransform(iVec,corpSize)
+			self.enVecs.updateVec(res)
+			
+			# Foreign
+			iVec,corpSize=self.esVecs.returnVec()
+			res=g.doParallelTransform(iVec,corpSize)
+			self.esVecs.updateVec(res)
+		else:
+			self.enVecs.transfromVector()
+			self.esVecs.transfromVector()
+		
+		
+	def testVectors(self):
 		#self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
-		iVec,corpSize=self.enVecs.returnVec()
-		res=g.doParallelTransform(iVec,corpSize)
+		if self.gpuFlag:
+			print "testing on a GPU..."
+		else:
+			print "testing on CPU..."
 		
 	def preprocess(self):
 		print "in preprocessing().."
