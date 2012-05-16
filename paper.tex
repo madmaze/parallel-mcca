@@ -34,7 +34,7 @@ Many of these calculations are embarrassingly parallel in nature and are therefo
 \section{Approach}
 % Basic Outline
 % Languages: French, German, Spanish
-% Data Sources (Copuses, Base Lexicon, Test Words)
+% Data Sources (Copora, Base Lexicon, Test Words)
 % Preprocessing
 % Build Vectors
 % Run tests
@@ -106,31 +106,36 @@ $$\sum_{i\in U,V} |U_i - V_i| $$
 
 \section{Parallelizing Vector Calculations}
 
-The parallelization effort of this project was mainly fulfilled by removing our complicated Python dictionary structures and placing our data into a flat, extremely large array which could easily be mapped to GPU memory. The main part that was outsourced to the GPU was the association vector calculation. We begin by transforming our input vectors into a 1 dimensional array which the GPU will access based on a stride(width of 1 set of variables). The actual communication with CUDA was done through the Python wrapper class called PyCUDA, which automatically compiles and interfaces with the GPU's C-based libraries.
+The parallelization effort of this project was fulfilled by removing our complicated Python dictionary structures and placing our data into a large, flat array that could easily be mapped to GPU memory. The part that was outsourced to the GPU was the association vector calculation.
 
-The GPU is then set to launch as many threads as there are co-occurrence values to be calculated. This may sound inefficient, but GPU threads are extremely light weight with very little overhead. Depending on the size of the vectors being calculated, we launch close to 3.5 Million threads at once. Each block of 512 threads is mapped to 1 multiprocessor. Depending on the graphics card used to run this code, it may have between 2 and 32 of these multiprocessors, each capable of concurrently executing between 16 and 32 threads (depending on architecture).
+We began by transforming our input vectors into a 1 dimensional array which the GPU will access based on a stride (width of 1 set of variables). The actual communication with CUDA was done through the Python wrapper class, PyCUDA. This wrapper class automatically compiles and interfaces with the GPU's C-based libraries.
+
+The GPU is then set to launch as many threads as there are association values to be calculated. This may sound inefficient, but GPU threads are extremely light weight with very little overhead. Depending on the size of the vectors being calculated, we launch close to 3.5 Million threads at once. Each block of 512 threads is mapped to 1 multiprocessor. Depending on the graphics card used to run this code, it may have between 2 and 32 of these multiprocessors, each capable of concurrently executing between 16 and 32 threads (depending on architecture).
 
 \section{Results}
 
-Since our results are mainly focused on the speedup gained with the same amount of processing we will mostly discuss the performance for the same operations, CPU vs GPU. The GPU executing a small test on a laptop, transforming English and German co-occurrence matrices, took 0.0004839 seconds and 0.000082015 seconds respectively. The counter part on the CPU too 0.636 seconds and 1.3375 seconds respectively. This however does not cover the full overhead of what the GPU needs to do with setup. Including this extra cost of setting up memory and copying between CPU and GPU memory, we arrive at more comparable numbers of 0.47 and 0.948 seconds respectively.
+Since our contributions are focused on the speedup gained while performing the same amount of processing, we will discuss the performance for the same operations on CPU vs GPU.
 
-Small laptop sized tests such as mentioned above do not to the capability of the GPU justice. So we reran the same test, scaled up in size by about 8 to 10x on a workstation with a much larger, 480-core, GPU. This saw a drastic increase in performance, a test with vectors of size 756000 and 1890000, saw a GPU runtime of 0.1855seconds and 0.382seconds vs the CPU which took 5.267 seconds and 13.2501 seconds respectively. That is a 28x to 34x speedup over the CPU code. (\emph{ see figure \ref{graph}})
+The GPU executing a small test on a laptop, transforming English and German co-occurrence matrices, took 0.0004839 seconds and 0.000082015 seconds respectively. The counter part on the CPU too 0.636 seconds and 1.3375 seconds respectively. This does not cover the setup overhead required by the GPU; including this extra cost of setting up memory and copying between CPU and GPU memory, we arrive at more comparable numbers of 0.47 and 0.948 seconds respectively.
+
+Small, laptop-sized tests do not do the capability of the GPU justice. We reran the same test, scaled up in size by about 8x to 10x on a workstation with a much larger, 480-core GPU. This saw an increase in performance. On a test with vectors of size 756000 and 1890000, we saw a GPU runtime of 0.1855 seconds and 0.382 seconds. The CPU took 5.267 seconds and 13.2501 seconds respectively. That is a 28x to 34x speedup over the CPU code. (\emph{ see figure \ref{graph}})
 \begin{figure}[htb]
 \centering
 \includegraphics[scale=.5]{graph.png}
 \caption{Performance CPU vs GPU runtime in seconds (lower is better)}
   \label{graph}
 \end{figure}
+
 \section{Conclusions}
 We can see that the GPU outperforms the CPU implementation. However, we need to consider that we are comparing a single core CPU application against a highly parallel GPU application. If the CPU implementation were translated into C or C++ and made multi-threaded, it would be a much closer competition. Overall, the GPU will still take the lead, leaving even the fastest CPUs in the dust.
 
-To achieve the highest efficientcy on the GPU, we would have needed to maximize the usage of GPU memory. On the Nvidia GTX480 we have 2GB of memory available, which translates into an upperbound of ~67 million vector element-pairs in memory at any given time. Maximum performance would be achieved when running closer to that limit. 
+To achieve the highest efficiency on the GPU, we would have needed to maximize the usage of GPU memory. On the Nvidia GTX480 we have 2GB of memory available, which translates into an upper-bound of ~67 million vector element-pairs in memory at any given time. Maximum performance would be achieved when running closer to that limit.
 
-During the preprocessing stage we ran into system memory constraints, because of Pythons high memory usage during vector generation. Therefore we only used a small subset of our input data, roughly 2.5 to 3 million words depending on the language. This put to waste much of the corpora we had accumilated, German 18.5 m words, Spanish 11.25 m words, French 91.9 m words and English 1.1 b words.
+During the preprocessing stage we ran into system memory constraints because of Python's high memory usage during vector generation. Therefore we only used a small subset of our input data: roughly 2.5 to 3 million words depending on the language. This wasted much of the corpora we had accumulated: 18.5 million words of German, 11.25 million words of Spanish, 91.9 million words of French, and 1.1 billion words of English.
 
-We spent most of time optimizing our python processing loops which pre-preprocess(strip licenses and invalid chars) and preprocess(parse, split and stem) all of our input data. Purely by varying the way things are iterated over sometimes gained as much as 100x speedup. In the future we should attempt to also outsouce this processing to the GPU, but since everything would have to be done in C, string processing will be a nightmare. 
+We spent most of our time optimizing and debugging our python processing loops. This code did pre-preprocessing (strip licenses and invalid chars) and preprocessing (tokenize, split, and stem) on all of our input data. Just changing the way it iterated over data gained as much as a 100x speedup. In the future, we should attempt to also outsource this processing to the GPU, but since everything would have to be done in C, string processing will be a nightmare.
 
-Overall we believe we have shown that the use of GPUs can be very adventageous and are surprised on the lack of GPU related Machine Translation literature. We will likely continue developing this in the future and have all of our source available at github.com/madmaze/parallel-mcca.
+Overall, we have shown that the use of GPUs can be very advantageous and are surprised on the lack of GPU related Machine Translation literature. We will likely continue developing this in the future and have all of our source available at github.com/madmaze/parallel-mcca.
 
 \bibliography{paper}
 \bibliographystyle{plain}
