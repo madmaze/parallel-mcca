@@ -12,7 +12,7 @@
 \maketitle
 \begin{abstract}
 
-Implementation of a machine translation technique which allows for learning word translations from unrelated corpora. We offer a method for scaling this technique to highly parallel graphics processors, using Python, NLTK and PyCUDA on NVIDA GPUs. We aim to highlight the advantages of using GPUs to speedup the vector calculations necessary for relating source language words to their target language counterparts.
+Implementation of a machine translation technique which allows for learning word translations from unrelated corpora. We offer a method for scaling this technique to highly parallel graphics processors, using Python, the Python NLTK, and PyCUDA on NVIDA GPUs. We aim to highlight the advantages of using GPUs to speedup the vector calculations necessary for relating source language words to their target language counterparts.
 
 \end{abstract}
 \section{Introduction}
@@ -44,25 +44,23 @@ German. Chris Callison-Burch provided us with our base dictionaries. We preproce
 
 \subsection{Preprocessing}
 
-For the dictionaries, as mentioned above, removed all multi-word phrases, one-to-many and many-to-one translations to give us a simple and uniform dictionary. The caveat here is that by only keeping one translation from the one-to-many entries, we may not have choosen the best translations. Each of the dictionaries was then split it into three parts. Most of each dictionary went into a base lexicon, roughly 20000 entries per language. Next we split off roughly 5000 entries for one test set and one development set.
+From the dictionaries, we removed all multi-word phrases, one-to-many, and many-to-one translations to give us a simple and uniform dictionary. The caveat here is that by only keeping one translation from the one-to-many entries, we may not have chosen the best translations. Each of the dictionaries was then split it into three parts. Most of each dictionary went into a base lexicon, which was roughly 20,000 entries per language. Next, we split off roughly 5000 entries each for a test set and a development set.
 
-To create each corpora we had to preprocess the Project Gutenberg books to strip out License agreements, notes, dictionaries and unreadable characters. For each corpora, we removed some common function words -- pronouns, articles,
-and prepositions, then segmented the corpora into sentences and words using the Python NLTK's default splitters. Next we stemmed all the words in each corpora and dictionaries using the Python NLTK's SnowballStemmer (for the appropriate
-language).
+We had to preprocess the Project Gutenberg books to strip out License agreements, notes, dictionaries, and unreadable characters. For each corpus, we removed some common function words (pronouns, articles, and prepositions), and then segmented the corpora into sentences and words using the Python NLTK's default splitters. Next we stemmed all the words in each corpus and in the dictionaries using the Python NLTK's SnowballStemmer for the appropriate language.
 
-After preprocessing each corpus and dictionary, we constructed co-occurence vectors which we then cleaned and trimmed to remove noise and save memory. Each of these was then transformed into an association vector. Once we had association vectors to represent the words in each corpus, we were ready to attempt the translations.
+After preprocessing each corpus and dictionary, we constructed co-occurrence vectors. We cleaned and trimmed these vectors to remove noise and save memory. Each of these was then transformed into an association vector. Once we had association vectors to represent the words in each corpus, we were ready to attempt the translations.
 
-%TODO: did we remove words that occured fewer than 100 times? at what stage?
+%TODO: did we remove words that occurred fewer than 100 times? at what stage?
 
-From the foreign language corpus, we pulled out the association vectors representing test words from our test dictionary. Since each of those vectors is already described in terms of words of the base lexicon, we used the base lexicon to translate each ``association word'' into English, so that the vectors would be in the same space as their English counter parts.
+From the target language corpus, we pulled out the association vectors representing test words from our test dictionary. Since each of those vectors is already described in terms of words of the base lexicon, we used the base lexicon to translate each ``association word'' into English, so that the vectors would be in the same space as their English counter parts.
 
-Next we can calculate the distanc between each foreign word vector and each English(source) word vector by calculating a simple Euclidian distance metric, the City-Block distance, the sum of each absolute element wise distance. For each foreign language word, the English word with the shortest City-Block distance is chosen as the best translation.
+Next we can calculate the distance between each target language word vector and each English(source) word vector by calculating a simple Euclidean distance metric, the City-Block distance. For each foreign language word, the English word with the smallest City-Block distance is chosen as the best translation.
 
 \subsection{Co-occurrence Counting}
 
-The goal is to end up with a set of vectors representing a the co-occurences between all words with in our corpus. Each vector
-represents the context that one word (that appeared in the corpus) appeared in. This can be though of as counting how many times word A appears within some given distance $w$ from word B. Based on Rapp's research we chose $w=3$, meaning for every word B we count all words, from word B's position -3 to +3. These vectors are composed of \{word B : (word A,number)\} mappings. Each mapping represents the number of times a certain word A has co-occured around word B within the range $w$. As suggested by \cite{rapp1999automatic}, we also kept track of the distance between word A and word B in our mappings. We handled this by prefixing the mapping of each word A with its original position in context. This better captures the relation between the co-occurring words. For each of the six position within our $w$-sized window, we first generate a separate vector and then collapse them into one to creat a vector of size six. For example, one of the six vectors would represent the words that
-occur two words before the target word. In practice, we just prepended each word with a number to represent which position it was found in, so the keys of the dictionary differentiate between the positions.
+The goal is to end up with a set of vectors representing the co-occurrences between all the words within our corpus. Each vector represents the context that one word (that appeared in the corpus) appeared in. This can be though of as counting how many times word A appears within some given distance $w$ from word B. Based on Rapp's research we chose $w=3$. This means that for every word B we count all words within three words of word B's position. These vectors are composed of \{word B : (word A, number)\} mappings. Each mapping represents the number of times a certain word A has co-occurred around word B within the range $w$.
+
+As suggested by \cite{rapp1999automatic}, we also kept track of the position of word A's appearance in the window. We handled this by prefixing the mapping of each word A with its original position in context. This better captures the relation between the co-occurring words. This can be thought of as, for each of the six positions within our $w$-sized window, first generating a separate vector, and then collapsing them all into one to create a vector that is six times the size. For example, one of the six vectors would represent the words that occur two words before the target word. In practice, we just prepended each word with a number to represent which window position it was found in, so the keys of the dictionary differentiate between the positions.
 
 \subsection{Association Vector}
 % take a context vector
@@ -70,7 +68,7 @@ occur two words before the target word. In practice, we just prepended each word
 % convert values
 % normalize
 
-Turning a co-occurrence vector into an association vector is fairly straight-forward. For each vector, we remove all words that are not in out base lexicon. We do this to endup with a vector that can be fully described in terms of the relations provided by the base lexicon. At this point, we apply an optimized log-likelihood ration formula presented in Rapp's original paper. (\emph{ see equation \ref{loglike}}). After we have calculated our association vectors, we normalize each vector to one.
+Turning a co-occurrence vector into an association vector is fairly straight-forward. For each vector, we remove all words that are not in our base lexicon. We do this to end up with a vector that can be fully described in terms of the relations provided by the base lexicon. At this point, we apply an optimized log-likelihood ratio formula presented in Rapp's original paper. (\emph{ see equation \ref{loglike}}). After we have calculated our association vectors, we normalize each vector to sum to one.
 
 To convert a raw co-occurrence count into an association value, you need: the count, the total number of times the word this context vector represents was seen, the number of times this word was seen, and the total number of word tokens in the corpus.
 
@@ -91,14 +89,14 @@ $N$ = $k_{11} + k_{12} + k_{21} + k_{22}$ \\
   & k_{21}\log\frac{k_{21}N}{C_2R_1} +  k_{22}\log\frac{k_{22}N}{C_2R_2} \\
   \end{eqnarray*}
 
-  \caption{Optimized log-likelihood ration formula.}
+  \caption{Optimized log-likelihood ratio formula.}
   \label{loglike}
 \end{figure}
 
 
 \subsection{Vector Similarity}
 
-Now that we have association vectors, we can calculate the similarity between two vectors by simply calculating a Euclidian ``City-Block" distance, which is the sum of each absolute element-wise distance. (\emph{ see equation \ref{cityblock}}) To find the best translation between one of our test vectors and our English source vectors, we minimize on the distance between the vector pairs. Therefore we find the closest matching vector from the other language, this is our best match and we consider it a translation.
+Now that we have association vectors, we can calculate the similarity between two vectors by simply calculating a ``City-Block'' distance, which is the sum of each absolute element-wise distance. (\emph{ see equation \ref{cityblock}}) To find the best translation between one of our target language test vectors and our English source vectors, we minimize on the distance between the vector pairs. We find the closest English vector to the target language vector; this is our best match and we consider it a translation.
 
 \begin{figure}
 $$\sum_{i\in U,V} |U_i - V_i| $$
@@ -108,7 +106,7 @@ $$\sum_{i\in U,V} |U_i - V_i| $$
 
 \section{Parallelizing Vector Calculations}
 
-The parallelization effort of this project was mainly fullfilled my removing our complicated Python dictionary structers and placing our data into flat, extremely large array which could easily be mapped to GPU memory. The main part that was outsourced to the GPU was the association vector calculation. We begin by transforming our input vectors into a 1 dimensional array which the GPU will access based on a stride(width of 1 set of variables). The actual communication with CUDA was done through the Python wrapper class called PyCUDA, which automatically compiles and interfaces with the GPU's C-based libraries.
+The parallelization effort of this project was mainly fulfilled by removing our complicated Python dictionary structures and placing our data into a flat, extremely large array which could easily be mapped to GPU memory. The main part that was outsourced to the GPU was the association vector calculation. We begin by transforming our input vectors into a 1 dimensional array which the GPU will access based on a stride(width of 1 set of variables). The actual communication with CUDA was done through the Python wrapper class called PyCUDA, which automatically compiles and interfaces with the GPU's C-based libraries.
 
 The GPU is then set to launch as many threads as there are co-occurence values to be calculated. This may sound inefficient, but GPU threads are extremely light weight with very little overhead. Depending on the size of the vectors being calculated, we launch close to 3.5 Million threads at once, arranged in block of 512 threads. Each block is mapped to 1 multiprocessor. Depending on the graphics card used to run this code, it may have between 2 and 32 of these multi processors, each capable of concurrently executing between 16 and 32 threads(depending on architecture).
 
