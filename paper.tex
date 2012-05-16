@@ -119,6 +119,14 @@ Small laptop sized tests such as mentioned above do not to the capability of the
 \section{Conclusions}
 We can see that the GPU outperforms the CPU implementation. However, we need to consider that we are comparing a single core CPU application against a highly parallel GPU application. If the CPU implementation were translated into C or C++ and made multi-threaded, it would be a much closer competition. Overall, the GPU will still take the lead, leaving even the fastest CPUs in the dust.
 
+To achieve the highest efficientcy on the GPU, we would have needed to maximize the usage of GPU memory. On the Nvidia GTX480 we have 2GB of memory available, which translates into an upperbound of ~67 million vector element-pairs in memory at any given time. Maximum performance would be achieved when running closer to that limit. 
+
+During the preprocessing stage we ran into system memory constraints, because of Pythons high memory usage during vector generation. Therefore we only used a small subset of our input data, roughly 2.5 to 3 million words depending on the language. This put to waste much of the corpora we had accumilated, German 18.5 m words, Spanish 11.25 m words, French 91.9 m words and English 1.1 b words.
+
+We spent most of time optimizing our python processing loops which pre-preprocess(strip licenses and invalid chars) and preprocess(parse, split and stem) all of our input data. Purely by varying the way things are iterated over sometimes gained as much as 100x speedup. In the future we should attempt to also outsouce this processing to the GPU, but since everything would have to be done in C, string processing will be a nightmare. 
+
+Overall we believe we have shown that the use of GPUs can be very adventageous and are surprised on the lack of GPU related Machine Translation literature. We will likely continue developing this in the future and have all of our source available at github.com/madmaze/parallel-mcca.
+
 \bibliography{paper}
 \bibliographystyle{plain}
 \end{document}
