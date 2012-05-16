@@ -72,7 +72,7 @@ using the City Block Distance as the comparision. For each target language word,
 the English word with the closest association vector is chosen as the
 translation.
 
-\section{Co-occurrence Counting}
+\subsection{Co-occurrence Counting}
 % Explain Cooccurrence and why we need it
 % using window size = 3; word order matters
 
@@ -96,7 +96,7 @@ occur two words before the target word. In practice, we just prepended each
 word with a number to represent which position it was found in, so the keys of
 the dictionary differentiate between the positions.
 
-\section{Association Vector}
+\subsection{Association Vector}
 % take a context vector
 % prune to base lexicon
 % convert values
@@ -113,7 +113,6 @@ count, the total number of times the word this context vector represents was
 seen, the number of times this word was seen, and the total number of word
 tokens in the corpus.
 
-%TODO: include fancy formula
 \begin{description}
 \item[$k_{11}$ =] frequency of common occurrence of word A and word B
 \item[$k_{12}$ =] corpus frequency of word A $- k_{11}$
@@ -132,7 +131,7 @@ tokens in the corpus.
 \end{description}
 
 
-\section{Vector Similarity}
+\subsection{Vector Similarity}
 % Equation (City Block Distance)
 
 To compare to vectors (U and V), we just calculat the City Block Distance.
