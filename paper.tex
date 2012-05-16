@@ -6,15 +6,13 @@
 \maketitle
 \begin{abstract}
 
-Coming up with word translations based on unrelated source texts and a base
-lexicon is a useful thing to do. However, it takes a long time when run on one
-CPU. Parallelizing it to run on a GPU makes it run much faster.
+Implementation of a machine translation technique which allows for learning word translations from unrelated corpora. We offer a methods for scaling this technique to highly parallel graphics processors, using Python, NLTK and PyCUDA on NVIDA GPUs. We aim to highlight the advantages of using GPUs to speedup the vector calculation necessary for relating source words to their foriegn counterparts.
 
 \end{abstract}
 \section{Introduction}
 % Describes problem & proposed solution
 
-It is much easier to get monolingual text than parallel text. For some
+The exponential growth of technologies such as the Internet and Social media, it has become easier than ever to harvest enormus monolingual dataset. There has been extensive research in the field of machine translation for parallel corpora, but little attention has been paid to learning from non-parallel monolingual corpora. For the most common of languages, parallel corpora are easy to come by, but for lesser known languages it may be hard to find a large enough parallel text. Though languages rarely lack in monolingual texts. We based our approach on \cite{rapp1999automatic} such as It is much easier to get monolingual text than parallel text. For some
 language pairs, parallel text is (nearly) non-existant. Thus, being able to
 expand dictionaries based unrelated corpora can be very useful.
 
@@ -152,5 +150,6 @@ Everything is awesome. Especially Tesla.
 
 % TODO: how do I citations? :|
 %citations go here: the source paper, mainly.
-
+\bibliography{paper}
+\bibliographystyle{plain}
 \end{document}
