@@ -15,6 +15,7 @@ class fVectors:
 		self.vector={}
 		self.totalTokens=0
 		self.totals={}
+		self.legend=[]
 
 	def buildVector(self, sentence):
 		# get context vector
@@ -294,12 +295,13 @@ class fVectors:
 	def returnVec(self):
 		print len(self.vector)
 		print type(self.vector)
-		legend=[]
+		self.legend=[]
 		allVec=[]
 		allVec2=[]
 		Alltotal=0
 		tCnt=0
 		maxLen=0
+		print "generating GPU vector.."
 		for w1 in self.vector:
 			#print type(self.vector[w1])
 			#print self.vector[w1]
@@ -313,12 +315,25 @@ class fVectors:
 				tCnt+=1
 			if len(curVec)>maxLen:
 				maxLen=len(curVec)
-			legend.append((w1,curLeg))
+			self.legend.append((w1,curLeg))
 			allVec.append(curVec)
 			#print "legend:",legend
 			#print ""
 			#print "allVec:",allVec
 			#exit()
-		print maxLen
-		print float(Alltotal)/tCnt
-		return self.vector, self.totalTokens
+		#print maxLen
+		#print float(Alltotal)/tCnt
+		return allVec2, self.totalTokens
+		
+	def updateVec(self, inVec):
+		i=0
+		for w1 in self.vector:
+			vtot=0
+			for w2 in self.vector[w1]:
+				self.vector[w1][w2]=float(inVec[i])
+				vtot+=float(inVec[i])
+				i+=1
+			# normalize.. should happen on GPU
+			for w2 in self.vector[w1]:
+				self.vector[w1][w2]=self.vector[w1][w2]/vtot
+

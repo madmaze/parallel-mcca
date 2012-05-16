@@ -6,12 +6,15 @@ from pycuda.compiler import SourceModule
 import numpy
 class gpuProcessor:
 	def doParallelTransform(self, inArray, corpusSize):
-		print corpusSize
-		#https://github.com/compmem/cutools/blob/master/gpustruct.py
-		a = numpy.array([[10.0,15.0,5.0],
+		# test data
+		'''a = numpy.array([[10.0,15.0,5.0],
 				[10.0,15.0,6.0],
 				[10.0,15.0,7.0],
-				[10.0,15.0,5.0]],numpy.float32)
+				[10.0,15.0,5.0]],numpy.float32)'''
+		a = numpy.array(inArray,numpy.float32)
+
+		print "Corpus size:", corpusSize
+		print "Input Size:", a.shape
 		# Total Vector count
 		vecCnt=a.shape[0]
 		
@@ -28,8 +31,8 @@ class gpuProcessor:
 		mod = SourceModule("""
 		    __global__ void transformVector(float *dest, float *a, float cSize, float vCnt)
 		    {
-		      int tid = threadIdx.x*3;
-		      int vIdx = blockIdx.x*512 + threadIdx.x;
+		      int tid = (blockIdx.x * 512 + threadIdx.x)*3;
+		      int vIdx = blockIdx.x * 512 + threadIdx.x;
 		      // Make sure only real things run
 		      if(vIdx < vCnt){
 			      float k11 = a[tid+2];
@@ -42,7 +45,11 @@ class gpuProcessor:
 			      float R2 = k12 + k22;
 			      float N = k11 + k12 + k21 + k22;
 			      
-			      dest[threadIdx.x] = k11*log((k11*N)/(C1*R1)) + k12*log((k12*N)/(C1*R2)) + k21*log((k21*N)/(C2*R1)) + k22*log((k22*N)/(C2*R2));
+			      if( k12 == 0 || k21 == 0){
+			      	dest[vIdx]=0;
+			      } else {
+			      	dest[vIdx] = k11*log((k11*N)/(C1*R1)) + k12*log((k12*N)/(C1*R2)) + k21*log((k21*N)/(C2*R1)) + k22*log((k22*N)/(C2*R2));
+			      }
 		      }
 		      
 		    }
@@ -58,12 +65,16 @@ class gpuProcessor:
 		gridx=int((vecCnt+511)/512)
 		
 		# Execute cuda kernel
+		print "executing kernel block(512,1,1) grid("+str(gridx)+",1)"
 		func(dest_gpu,a_gpu,cSize,vCnt, block=(512,1,1), grid=(gridx,1))
 		
 		# Return result to host
 		cuda.memcpy_dtoh(dest, dest_gpu)
-		
+		'''
 		print "Input:"
 		print a
 		print "Result:"
+		print dest.shape
 		print dest
+		'''
+		return dest
