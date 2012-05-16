@@ -268,7 +268,9 @@ class fVectors:
 			#print tmp
 			if tmp[1] in self.vector:
 				base[tmp[1]]=self.vector[tmp[1]] #base[word] = {word->double}
-				print "here", base[tmp[1]]
+				#print "here", tmp[1],base[tmp[1]]
+				#break
+				
 		#so, now base has testword->{foreignword->number} for each testword in dictionary
 		#now, we need to translate each foreignword to english (using lang.1.part), to facilitate comparisons
 		f.close()
@@ -291,6 +293,9 @@ class fVectors:
 
 		#testvect = foriegn_test_word -> {n_englishword -> number}
 		self.vector = testvect
+	
+	def getVec(self):
+		return self.vector
 		
 	def returnVec(self):
 		print len(self.vector)

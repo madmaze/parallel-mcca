@@ -34,11 +34,12 @@ if __name__ == "__main__":
 		print " Entering Vector Transformation..."
 		D.loadVecs()
 		D.transformVecs()
-		D.saveVecs()
+		D.testVectors()
+		#D.saveVecs()
 	elif opts.run_flag:
 		print " Entering MCCA calculation..."
 		D.loadVecs()
-		D.runMCCA()
+		D.testVectors()
 	else:
 		print "No option selected..."
 		

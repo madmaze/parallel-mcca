@@ -151,12 +151,45 @@ class data:
 		
 		
 	def testVectors(self):
-		#self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
+		print "getting test vector"
+		self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
+		#self.enVecs.getTestVectors("german.2.part","DICT/german.1.part")
 		if self.gpuFlag:
 			print "testing on a GPU..."
 		else:
 			print "testing on CPU..."
-		
+			testVecs = self.esVecs.getVec()
+			srcVecs = self.enVecs.getVec()
+			res=[]
+			print len(testVecs), len(srcVecs)
+			#exit()
+			
+			for t in testVecs:
+				best=100
+				btup=(1,1)
+				for s in srcVecs:
+					d,c=self.getCityBlockDist(testVecs[t],srcVecs[s])
+					if c>5:
+						res.append((s,t,d,c))
+						if d < best:
+							best=d
+							btup=(s,t,d,c)
+				print btup
+			
+	def getCityBlockDist(self, S, T):
+		#print len(S),len(T)
+		#print S
+		dist=0
+		missingCnt=0
+		for s in S:
+			if s in T:
+				dist+=abs(S[s]-T[s])
+			else:
+				missingCnt+=1
+		#print "missingCnt",missingCnt
+		common= len(S)-missingCnt
+		return dist,common
+			
 	def preprocess(self):
 		print "in preprocessing().."
 		for l in self.langDirs:
