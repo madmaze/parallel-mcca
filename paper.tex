@@ -1,7 +1,7 @@
 \documentclass[12pt]{article}
 
 \title{Parallelizing Automatic Identification of Word Translations from Unrelated Corpora}
-\author{Leah Hanson, Matthias Lee}
+\author{Leah Hanson, Matthias Lee, Mike Weinberger}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -12,7 +12,9 @@ Implementation of a machine translation technique which allows for learning word
 \section{Introduction}
 % Describes problem & proposed solution
 
-The exponential growth of technologies such as the Internet and Social media, it has become easier than ever to harvest enormus monolingual dataset. There has been extensive research in the field of machine translation for parallel corpora, but little attention has been paid to learning from non-parallel monolingual corpora. For the most common of languages, parallel corpora are easy to come by, but for lesser known languages it may be hard to find a large enough parallel text. Though languages rarely lack in monolingual texts. We based our approach on \cite{rapp1999automatic} and \cite{rapp1995identifying}, which soley relies on the notion that words tend to co-occur in similar frequency across different languages. Rapp cites that even very different languages such as Chinese and English share these co-occurences. We firstly aimed to replecate their results in a serial manner as a baseline and then take a step further to rework their vector calculation approach to allow for porting to graphics processors with PyCUDA. 
+The exponential growth of technologies such as the Internet and Social media, it has become easier than ever to harvest enormus monolingual dataset. There has been extensive research in the field of machine translation for parallel corpora, but little attention has been paid to learning from non-parallel monolingual corpora. For the most common of languages, parallel corpora are easy to come by, but for lesser known languages it may be hard to find a large enough parallel text. Though languages rarely lack in monolingual texts. 
+
+We based our approach on \cite{rapp1999automatic} and \cite{rapp1995identifying}, which soley relies on the notion that words tend to co-occur in similar frequency across different languages. Rapp cites that even very different languages such as Chinese and English share these co-occurences. We firstly aimed to replecate their results in a serial manner as a baseline and then take a step further to rework their vector calculation approach to allow for porting to graphics processors with PyCUDA. 
 
 Rapp's approach is based on building co-occurence matrix, which keeps track of co-occurences between words appearing within a range $w$ from on another. These matricies are computed for both corpora and are then transformed into association matricies, by calculating the log-likelihood ratio for each co-occurence. These association matricies/vectors can then be compared with a simple Euclidian distance metric such as the city-block metric.
 
@@ -27,30 +29,18 @@ Many of these calculations are embarrassingly parallel in nature and are therefo
 % Build Vectors
 % Run tests
 
-We are expanding dictionaries for English-Spanish, English-French, and English-
-German. This means we need four monolingual corpora (one for each language) and
-three dictionaries (to source the base lexicons and test words from).
+To resolve a basic connection between our source and foreign corpora we start with a base dictionary for each language pair. In this project we are aiming to expand dictionaries for English-Spanish, English-French, and English-
+German. Chris Callison-Burch provided us with our base dictionaries. We preprocessed each of them to strip all multi-word translations and to only include one translation for each english word. Next we needed to appropriate four large corpora. This was done by mirroring Project Gutenbergs collection for each of the languages.
 
-For our monolingual corpora, we used Project Gutenburg. For the dictionaries,
-....we asked Chris?.
+\subsection{Preprocessing}
 
-%TODO: how big were the dictionaries? how did we divide them up?
+For the dictionaries, as mentioned above, removed all multi-word phrases, one-to-many and many-to-one translations to give us a simple and uniform dictionary. The caveat here is that by only keeping one translation from the one-to-many entries, we may not have choosen the best translations. Each of the dictionaries was then split it into three parts. Most of each dictionary went into a base lexicon, roughly 20000 entries per language. Next we split off roughly 5000 entries for one test set and one development set.
 
-We removed all multi-word phrases from each dictionary, and then split it into
-three parts. Most (what percent?) of each dictionary went for the base lexicon.
-We ended up with base lexicons on the order of ??? word pairs. The other two
-parts (of approximately equal size) were used as a development and a test set.
-
-From each corpora, we removed some common function words -- pronouns, articles,
-and prepositions. We segmented the corpora into sentances and words using the
-Python NLTK's default splitters. We then stemmed all the words in each corpus
-and dictionary using the Python NLTK's SnowballStemmer (for the appropriate
+To create each corpora we had to preprocess the Project Gutenberg books to strip out License agreements, notes, dictionaries and unreadable characters. For each corpora, we removed some common function words -- pronouns, articles,
+and prepositions, then segmented the corpora into sentences and words using the Python NLTK's default splitters. Next we stemmed all the words in each corpora and dictionaries using the Python NLTK's SnowballStemmer (for the appropriate
 language).
 
-After preprocessing each corpus, we build co-occurence vectors. Then we
-transformed teh co-occurrence vectors into association vectors. Once we had
-association vectors to represent the words in each corpus, we were ready to
-attempt some translations. :)
+After preprocessing each corpus, we built co-occurence vectors. Each of these was then transformed into an association vector. Once we had association vectors to represent the words in each corpus, we were ready to attempt the translations.
 
 %TODO: did we remove words that occured fewer than 100 times? at what stage?
 
