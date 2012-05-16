@@ -4,6 +4,7 @@
 \usepackage[pdftex]{graphicx}
 \usepackage{fancyvrb,relsize}
 \usepackage{amssymb,amsmath}
+\usepackage{mathtools}
 
 \title{Parallelizing Automatic Identification of Word Translations from Unrelated Corpora}
 \author{Leah Hanson, Matthias Lee, Mike Weinberger}
@@ -81,8 +82,11 @@ $R_1$ = $k_{11} + k_{21}$
 $R_2$ = $k_{12} + k_{22}$ \\
 $N$ = $k_{11} + k_{12} + k_{21} + k_{22}$ \\
 
-New Value $ = k_{11}\log\frac{k_{11}N}{C_1R_1} +  k_{12}\log\frac{k_{12}N}{C_1R_2} +$ \\
- $\hspace{20pt} k_{21}\log\frac{k_{21}N}{C_2R_1} +  k_{22}\log\frac{k_{22}N}{C_2R_2}$ \\
+  \begin{eqnarray*}
+New Value &= k_{11}\log\frac{k_{11}N}{C_1R_1} +  k_{12}\log\frac{k_{12}N}{C_1R_2} + \\
+  & k_{21}\log\frac{k_{21}N}{C_2R_1} +  k_{22}\log\frac{k_{22}N}{C_2R_2} \\
+  \end{eqnarray*}
+
   \caption{Optimized log-likelihood ration formula.}
   \label{loglike}
 \end{figure}
@@ -90,7 +94,7 @@ New Value $ = k_{11}\log\frac{k_{11}N}{C_1R_1} +  k_{12}\log\frac{k_{12}N}{C_1R_
 
 \subsection{Vector Similarity}
 
-Now that we have association vectors, we can calculate the similarity between two vectors by simply calculating a Euclidian "City-Block" distance, which is the . \emph{ see equation \ref{cityblock}}) 
+Now that we have association vectors, we can calculate the similarity between two vectors by simply calculating a Euclidian "City-Block" distance, which is the sum of each absolute element-wise distance. (\emph{ see equation \ref{cityblock}}) To find the best translation between 
 
 
 \begin{figure}
