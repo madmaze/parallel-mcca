@@ -12,17 +12,12 @@ Implementation of a machine translation technique which allows for learning word
 \section{Introduction}
 % Describes problem & proposed solution
 
-The exponential growth of technologies such as the Internet and Social media, it has become easier than ever to harvest enormus monolingual dataset. There has been extensive research in the field of machine translation for parallel corpora, but little attention has been paid to learning from non-parallel monolingual corpora. For the most common of languages, parallel corpora are easy to come by, but for lesser known languages it may be hard to find a large enough parallel text. Though languages rarely lack in monolingual texts. We based our approach on \cite{rapp1999automatic} such as It is much easier to get monolingual text than parallel text. For some
-language pairs, parallel text is (nearly) non-existant. Thus, being able to
-expand dictionaries based unrelated corpora can be very useful.
+The exponential growth of technologies such as the Internet and Social media, it has become easier than ever to harvest enormus monolingual dataset. There has been extensive research in the field of machine translation for parallel corpora, but little attention has been paid to learning from non-parallel monolingual corpora. For the most common of languages, parallel corpora are easy to come by, but for lesser known languages it may be hard to find a large enough parallel text. Though languages rarely lack in monolingual texts. We based our approach on \cite{rapp1999automatic} and \cite{rapp1995identifying}, which soley relies on the notion that words tend to co-occur in similar frequency across different languages. Rapp cites that even very different languages such as Chinese and English share these co-occurences. We firstly aimed to replecate their results in a serial manner as a baseline and then take a step further to rework their vector calculation approach to allow for porting to graphics processors with PyCUDA. 
 
-There is already a technique for doing this. It involves building cooccurrence
-vectors based on the corpora, trimming them to the base lexicon words, and
-then comparing each unknown foriegn word to the source language vectors to
-find the best correspondance.
+Rapp's approach is based on building co-occurence matrix, which keeps track of co-occurences between words appearing within a range $w$ from on another. These matricies are computed for both corpora and are then transformed into association matricies, by calculating the log-likelihood ratio for each co-occurence. These association matricies/vectors can then be compared with a simple Euclidian distance metric such as the city-block metric.
 
-Because it involves vectors, there is a degree of obvious parallelism in the
-algorithm, especially the vector comparisons at the end.
+Many of these calculations are embarrassingly parallel in nature and are therefore great candidates for GPU processing.
+
 
 \section{Approach}
 % Basic Outline
