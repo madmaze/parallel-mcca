@@ -83,7 +83,7 @@ $R_2$ = $k_{12} + k_{22}$ \\
 $N$ = $k_{11} + k_{12} + k_{21} + k_{22}$ \\
 
   \begin{eqnarray*}
-New Value &= k_{11}\log\frac{k_{11}N}{C_1R_1} +  k_{12}\log\frac{k_{12}N}{C_1R_2} + \\
+\sum_{i,j\in\{1,2\}} k_{ij}\log\frac{k_{ij}N}{C_iR_j} &= k_{11}\log\frac{k_{11}N}{C_1R_1} +  k_{12}\log\frac{k_{12}N}{C_1R_2} + \\
   & k_{21}\log\frac{k_{21}N}{C_2R_1} +  k_{22}\log\frac{k_{22}N}{C_2R_2} \\
   \end{eqnarray*}
 
@@ -94,7 +94,7 @@ New Value &= k_{11}\log\frac{k_{11}N}{C_1R_1} +  k_{12}\log\frac{k_{12}N}{C_1R_2
 
 \subsection{Vector Similarity}
 
-Now that we have association vectors, we can calculate the similarity between two vectors by simply calculating a Euclidian "City-Block" distance, which is the sum of each absolute element-wise distance. (\emph{ see equation \ref{cityblock}}) To find the best translation between 
+Now that we have association vectors, we can calculate the similarity between two vectors by simply calculating a Euclidian "City-Block" distance, which is the sum of each absolute element-wise distance. (\emph{ see equation \ref{cityblock}}) To find the best translation between one of our test vectors and our English source vectors, we minimize on the distance between the vector pairs. Therefore we 
 
 
 \begin{figure}
