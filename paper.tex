@@ -12,17 +12,21 @@
 \maketitle
 \begin{abstract}
 
-Implementation of a machine translation technique which allows for learning word translations from unrelated corpora. We offer a methods for scaling this technique to highly parallel graphics processors, using Python, NLTK and PyCUDA on NVIDA GPUs. We aim to highlight the advantages of using GPUs to speedup the vector calculation necessary for relating source words to their foriegn counterparts.
+Implementation of a machine translation technique which allows for learning word translations from unrelated corpora. We offer a method for scaling this technique to highly parallel graphics processors, using Python, NLTK and PyCUDA on NVIDA GPUs. We aim to highlight the advantages of using GPUs to speedup the vector calculations necessary for relating source language words to their target language counterparts.
 
 \end{abstract}
 \section{Introduction}
 % Describes problem & proposed solution
 
-The exponential growth of technologies such as the Internet and Social media, it has become easier than ever to harvest enormus monolingual dataset. There has been extensive research in the field of machine translation for parallel corpora, but little attention has been paid to learning from non-parallel monolingual corpora. For the most common of languages, parallel corpora are easy to come by, but for lesser known languages it may be hard to find a large enough parallel text. Though languages rarely lack in monolingual texts.
+With the exponential growth of technologies such as the Internet and social media, it has become easier than ever to harvest enormous monolingual datasets. There has been extensive research in the field of machine translation using parallel corpora, but little attention has been paid to learning from unrelated corpora. For the most common language pairs, parallel corpora are easy to come by. However, for lesser known languages or uncommon pairings of common languages, it may be difficult or impossible to find a sufficiently large parallel corpus. On the other hand, languages rarely lack in monolingual texts. Even uncommon pairings of common languages will have an abundance of monolingual data.
 
-We based our approach on \cite{rapp1999automatic} and \cite{rapp1995identifying}, which soley relies on the notion that words tend to co-occur in similar frequency across different languages. Rapp cites that even very different languages such as Chinese and English share these co-occurences. We firstly aimed to replecate their results in a serial manner as a baseline and then take a step further to rework their vector calculation approach to allow for porting to graphics processors with PyCUDA.
+%^ it's that pairs like French-Japanese don't have much parallel data, even though they're both common.
+% not just that English-"obscure tribal language" lacks data.
 
-Rapp's approach is based on building co-occurence matrix, which keeps track of co-occurences between words appearing within a range $w$ from on another. These matricies are computed for both corpora and are then transformed into association matricies, by calculating the log-likelihood ratio for each co-occurence. These association matricies/vectors can then be compared with a simple Euclidian distance metric such as the city-block metric.
+We based our approach on \cite{rapp1999automatic} and \cite{rapp1995identifying}. Their method depends on the notion that words tend to co-occur in similar contexts across different languages. We aimed to do two things. First, to replicate their results in a serial manner as a baseline. Second, to port their vector calculations to graphics processors with PyCUDA.
+%TODO: just can't figure out how to make this listing work :(
+
+Rapp's approach is based on building co-occurrence matrix, which keeps track of co-occurrences between words appearing within a window $w$ of one another. These matrices are computed for both the source and target language corpora and are then transformed into association matrices, by calculating the log-likelihood ratio for each co-occurrence. These association matrices/vectors can then be compared with a simple Euclidean distance metric, such as city-block distance.
 
 Many of these calculations are embarrassingly parallel in nature and are therefore great candidates for GPU processing.
 
@@ -35,8 +39,8 @@ Many of these calculations are embarrassingly parallel in nature and are therefo
 % Build Vectors
 % Run tests
 
-To resolve a basic connection between our source and foreign corpora we start with a base dictionary for each language pair. In this project we are aiming to expand dictionaries for English-Spanish, English-French, and English-
-German. Chris Callison-Burch provided us with our base dictionaries. We preprocessed each of them to strip all multi-word translations and to only include one translation for each english word. Next we needed to appropriate four large corpora. This was done by mirroring Project Gutenbergs collection for each of the languages.
+To resolve a basic connection between our source and target corpora we start with a base dictionary for each language pair. In this project we are aiming to expand dictionaries for English-Spanish, English-French, and English-
+German. Chris Callison-Burch provided us with our base dictionaries. We preprocessed each of them to strip all multi-word translations and to only include one translation for each English word. When there were multiple translations for an English word, we picked which translation to keep at random. Next we needed to acquire four large corpora. This was done by mirroring Project Gutenberg's collection for each of the languages.
 
 \subsection{Preprocessing}
 
