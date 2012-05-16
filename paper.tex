@@ -110,13 +110,12 @@ The GPU is then set to launch as many threads as there are co-occurence values t
 
 \section{Results}
 
-It went faster. :D %We hope.
+Since our results are mainly focused on speedup gained with the same amount of processing we will mostly discuss the performance for the same operations CPU vs GPU. The GPU executing a small test on a laptop, transforming an english and german co-occurence matrix, took 0.0004839seconds and 0.000082015seconds respectively. The counter part on the CPU too 0.636 seconds and 1.3375 seconds respectively. This however does not cover the full overhead of what the GPU needs to do with setup. Including this extra cost of setting up memory and copying between CPU and GPU memory, we arrive at more comparable numbers of 0.47 and 0.948 seconds respectively. 
 
-%Here be a-Maze-ing graphs?
+Small laptop sized tests such as mentioned above do not to the capabillity of the GPU justice. So we reran the same test, scaled up in size by about <waiting for thing to finish so i can put stuff here>
 
 \section{Conclusions}
-Everything is awesome. Especially Tesla.
-%Probably need results to draw conclusions....
+As prooven above, we can see that the GPU out performs the CPU implementation by far. But we also need to consider that we are comparing a single code CPU application against a highly parallel GPU application. In reality, the CPU implementation, if translated into C or C++ and made multi-threaded it would be a much closer competition, but overall the GPU will still take the lead and leave even the fastest CPUs in the dust.
 
 \bibliography{paper}
 \bibliographystyle{plain}
