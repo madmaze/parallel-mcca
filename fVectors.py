@@ -218,7 +218,7 @@ class fVectors:
 			del self.vector[w1][w2]
 
 
-	def cleanEnglishVector(self,filename):
+	def cleanEnglishVector(self,alterLang):
 		print "cleaning english vector...."
 		if self.lang != "en":
 			print "why are you pruning a non-english vector by a different language?"
@@ -226,6 +226,16 @@ class fVectors:
 
 		base = []
 		lines = ""
+		if alterLang == "fr":
+			filename = "french.1.part"
+		elif alterLang == "de":
+			filename = "german.1.part"
+		elif alterLang == "es":
+			filename = "spanish.1.part"
+		else:
+			print "wrong lang?"
+			exit()
+			
 		f = open('./DICT/'+filename, 'r')
 		for l in f.readlines():
 			bits=l.strip().split("\t")
@@ -251,8 +261,20 @@ class fVectors:
 			del self.vector[w1][w2]
 
 
-	def getTestVectors(self,filename,filename2):
+	def getTestVectors(self,alterLang):
 		print "get Test Vectors...."
+		if alterLang == "fr":
+			filename = "french.2.part"
+			filename2 = "french.1.part"
+		elif alterLang == "de":
+			filename = "german.2.part"
+			filename2 = "german.1.part"
+		elif alterLang == "es":
+			filename = "spanish.2.part"
+			filename2 = "spanish.1.part"
+		else:
+			print "wrong lang?"
+			exit()
 
 		base = {}
 		lines = []
@@ -274,7 +296,7 @@ class fVectors:
 		#so, now base has testword->{foreignword->number} for each testword in dictionary
 		#now, we need to translate each foreignword to english (using lang.1.part), to facilitate comparisons
 		f.close()
-		f = open(filename2, 'r')
+		f = open('./DICT/'+filename2, 'r')
 		for l in f.readlines():
 			lines.append(l.strip())
 		tmp = []

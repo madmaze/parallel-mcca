@@ -36,7 +36,7 @@ class data:
 	def runMCCA(self):
 		print "in MCCA..."
 		#self.esVecs.getTestVectors("german.2.part")
-		tVec = self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
+		tVec = self.esVecs.getTestVectors(self.langDirs[1])
 		print tVec
 
 	def compareVecs(self, S, T):
@@ -79,28 +79,21 @@ class data:
 				legend.append(Bo)
 				combB.append(1)
 				combA.append(0)
-		# build context vector?
 
-		#for i in range(0,len(legend)):
-		#	if combA[i]==combB[i]:
-		#		print legend[i],combA[i],combB[i],"<here"
-		#
-		#print vecB
-		#exit()
 		return combA, combB, legend
 
 	def saveVecs(self):
 		dirs=self.procDir+"/"+self.vecSubdir
-		pickle.dump( self.enVecs, open( dirs + "/" + "en" + "_All.p", "wb" ) )
+		pickle.dump( self.enVecs, open( dirs + "/" + self.langDirs[0] + "_All.p", "wb" ) )
 		#self.enVecs.saveVectors(self.procDir+"/"+self.vecSubdir)
-		pickle.dump( self.esVecs, open( dirs + "/" + "es" + "_All.p", "wb" ) )
+		pickle.dump( self.esVecs, open( dirs + "/" + self.langDirs[1] + "_All.p", "wb" ) )
 		#self.esVecs.saveVectors(self.procDir+"/"+self.vecSubdir)
 
 	def loadVecs(self):
 		dirs=self.procDir+"/"+self.vecSubdir
-		self.enVecs = pickle.load( open( dirs + "/" + "en" + "_All.p", "rb" ) )
+		self.enVecs = pickle.load( open( dirs + "/" + self.langDirs[0] + "_All.p", "rb" ) )
 		#self.enVecs.loadVectors(self.procDir+"/"+self.vecSubdir)
-		self.esVecs = pickle.load( open( dirs + "/" + "es" + "_All.p", "rb" ) )
+		self.esVecs = pickle.load( open( dirs + "/" + self.langDirs[1] + "_All.p", "rb" ) )
 		#self.esVecs.loadVectors(self.procDir+"/"+self.vecSubdir)
 
 	def genVectors(self):
@@ -114,18 +107,18 @@ class data:
 					print f
 					inFile = open(f, "r");
 					for line in inFile.readlines():
-						if l == "en":
+						if l == self.langDirs[0]:
 							#print line.strip()
 							#print "en"
 							self.enVecs.buildVector(line.strip())
 
-						elif l == "de":
+						else:
 							#print "de"
 							#print line.strip()
 							self.esVecs.buildVector(line.strip())
 
 		self.enVecs.cleanupVector()
-		self.enVecs.cleanEnglishVector("german.1.part")
+		self.enVecs.cleanEnglishVector(self.langDirs[1])
 		self.esVecs.cleanupVector()
 		
 		#self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
@@ -152,7 +145,7 @@ class data:
 		
 	def testVectors(self):
 		print "getting test vector"
-		self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
+		self.esVecs.getTestVectors(self.langDirs[1])
 		#self.enVecs.getTestVectors("german.2.part","DICT/german.1.part")
 		if self.gpuFlag:
 			print "testing on a GPU..."
@@ -177,8 +170,6 @@ class data:
 				print btup
 			
 	def getCityBlockDist(self, S, T):
-		#print len(S),len(T)
-		#print S
 		dist=0
 		missingCnt=0
 		for s in S:
@@ -214,12 +205,6 @@ class data:
 				out += " "+w
 			except:
 				print w, " not included"
-			#containsUnknown=0
-			#for l in w:
-			#	if ord(l) > 128:
-			#		containsUnknown=1
-			#if containsUnknown == 0:
-			#	out += " "+w
 		return out
 
 	def saveProcessed(self,data,fname):
