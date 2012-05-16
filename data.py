@@ -116,10 +116,12 @@ class data:
 							#print "de"
 							#print line.strip()
 							self.esVecs.buildVector(line.strip())
-
-		self.enVecs.cleanupVector()
-		self.enVecs.cleanEnglishVector(self.langDirs[1])
-		self.esVecs.cleanupVector()
+			# clean vectors here for saving memory
+			if l == self.langDirs[0]:
+				self.enVecs.cleanupVector()
+				self.enVecs.cleanEnglishVector(self.langDirs[1])
+			else:
+				self.esVecs.cleanupVector()
 		
 		#self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
 		
