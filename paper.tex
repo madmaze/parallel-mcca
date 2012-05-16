@@ -18,9 +18,9 @@ Implementation of a machine translation technique which allows for learning word
 \section{Introduction}
 % Describes problem & proposed solution
 
-The exponential growth of technologies such as the Internet and Social media, it has become easier than ever to harvest enormus monolingual dataset. There has been extensive research in the field of machine translation for parallel corpora, but little attention has been paid to learning from non-parallel monolingual corpora. For the most common of languages, parallel corpora are easy to come by, but for lesser known languages it may be hard to find a large enough parallel text. Though languages rarely lack in monolingual texts. 
+The exponential growth of technologies such as the Internet and Social media, it has become easier than ever to harvest enormus monolingual dataset. There has been extensive research in the field of machine translation for parallel corpora, but little attention has been paid to learning from non-parallel monolingual corpora. For the most common of languages, parallel corpora are easy to come by, but for lesser known languages it may be hard to find a large enough parallel text. Though languages rarely lack in monolingual texts.
 
-We based our approach on \cite{rapp1999automatic} and \cite{rapp1995identifying}, which soley relies on the notion that words tend to co-occur in similar frequency across different languages. Rapp cites that even very different languages such as Chinese and English share these co-occurences. We firstly aimed to replecate their results in a serial manner as a baseline and then take a step further to rework their vector calculation approach to allow for porting to graphics processors with PyCUDA. 
+We based our approach on \cite{rapp1999automatic} and \cite{rapp1995identifying}, which soley relies on the notion that words tend to co-occur in similar frequency across different languages. Rapp cites that even very different languages such as Chinese and English share these co-occurences. We firstly aimed to replecate their results in a serial manner as a baseline and then take a step further to rework their vector calculation approach to allow for porting to graphics processors with PyCUDA.
 
 Rapp's approach is based on building co-occurence matrix, which keeps track of co-occurences between words appearing within a range $w$ from on another. These matricies are computed for both corpora and are then transformed into association matricies, by calculating the log-likelihood ratio for each co-occurence. These association matricies/vectors can then be compared with a simple Euclidian distance metric such as the city-block metric.
 
@@ -50,7 +50,7 @@ After preprocessing each corpus and dictionary, we constructed co-occurence vect
 
 %TODO: did we remove words that occured fewer than 100 times? at what stage?
 
-From the foreign language corpus, we pulled out the association vectors representing test words from our test dictionary. Since each of those vectors is already described in terms of words of the base lexicon, we used the base lexicon to translate each "association word" into English, so that the vectors would be in the same space as their English counter parts.
+From the foreign language corpus, we pulled out the association vectors representing test words from our test dictionary. Since each of those vectors is already described in terms of words of the base lexicon, we used the base lexicon to translate each ``association word'' into English, so that the vectors would be in the same space as their English counter parts.
 
 Next we can calculate the distanc between each foreign word vector and each English(source) word vector by calculating a simple Euclidian distance metric, the City-Block distance, the sum of each absolute element wise distance. For each foreign language word, the English word with the shortest City-Block distance is chosen as the best translation.
 
@@ -76,9 +76,9 @@ $k_{12} =$ corpus frequency of word $A - k_{11}$ \\
 $k_{21} =$ corpus frequency of word $B - k_{11}$ \\
 $k_{22} =$ size of corpus (in tokens) - corpus freq. of A - corpus freq. of B \\
 
-$C_1$ = $k_{11} + k_{12}$ 
+$C_1$ = $k_{11} + k_{12}$
 $C_2$ = $k_{21} + k_{22}$ \\
-$R_1$ = $k_{11} + k_{21}$ 
+$R_1$ = $k_{11} + k_{21}$
 $R_2$ = $k_{12} + k_{22}$ \\
 $N$ = $k_{11} + k_{12} + k_{21} + k_{22}$ \\
 
@@ -94,7 +94,7 @@ $N$ = $k_{11} + k_{12} + k_{21} + k_{22}$ \\
 
 \subsection{Vector Similarity}
 
-Now that we have association vectors, we can calculate the similarity between two vectors by simply calculating a Euclidian "City-Block" distance, which is the sum of each absolute element-wise distance. (\emph{ see equation \ref{cityblock}}) To find the best translation between one of our test vectors and our English source vectors, we minimize on the distance between the vector pairs. Therefore we find the closest matching vector from the other language, this is our best match and we consider it a translation.
+Now that we have association vectors, we can calculate the similarity between two vectors by simply calculating a Euclidian ``City-Block" distance, which is the sum of each absolute element-wise distance. (\emph{ see equation \ref{cityblock}}) To find the best translation between one of our test vectors and our English source vectors, we minimize on the distance between the vector pairs. Therefore we find the closest matching vector from the other language, this is our best match and we consider it a translation.
 
 \begin{figure}
 $$\sum_{i\in U,V} |U_i - V_i| $$
@@ -106,11 +106,11 @@ $$\sum_{i\in U,V} |U_i - V_i| $$
 
 The parallelization effort of this project was mainly fullfilled my removing our complicated Python dictionary structers and placing our data into flat, extremely large array which could easily be mapped to GPU memory. The main part that was outsourced to the GPU was the association vector calculation. We begin by transforming our input vectors into a 1 dimensional array which the GPU will access based on a stride(width of 1 set of variables). The actual communication with CUDA was done through the Python wrapper class called PyCUDA, which automatically compiles and interfaces with the GPU's C-based libraries.
 
-The GPU is then set to launch as many threads as there are co-occurence values to be calculated. This may sound inefficient, but GPU threads are extremely light weight with very little overhead. Depending on the size of the vectors being calculated, we launch close to 3.5 Million threads at once, arranged in block of 512 threads. Each block is mapped to 1 multiprocessor. Depending on the graphics card used to run this code, it may have between 2 and 32 of these multi processors, each capable of concurrently executing between 16 and 32 threads(depending on architecture). 
+The GPU is then set to launch as many threads as there are co-occurence values to be calculated. This may sound inefficient, but GPU threads are extremely light weight with very little overhead. Depending on the size of the vectors being calculated, we launch close to 3.5 Million threads at once, arranged in block of 512 threads. Each block is mapped to 1 multiprocessor. Depending on the graphics card used to run this code, it may have between 2 and 32 of these multi processors, each capable of concurrently executing between 16 and 32 threads(depending on architecture).
 
 \section{Results}
 
-Since our results are mainly focused on speedup gained with the same amount of processing we will mostly discuss the performance for the same operations CPU vs GPU. The GPU executing a small test on a laptop, transforming an english and german co-occurence matrix, took 0.0004839seconds and 0.000082015seconds respectively. The counter part on the CPU too 0.636 seconds and 1.3375 seconds respectively. This however does not cover the full overhead of what the GPU needs to do with setup. Including this extra cost of setting up memory and copying between CPU and GPU memory, we arrive at more comparable numbers of 0.47 and 0.948 seconds respectively. 
+Since our results are mainly focused on speedup gained with the same amount of processing we will mostly discuss the performance for the same operations CPU vs GPU. The GPU executing a small test on a laptop, transforming an english and german co-occurence matrix, took 0.0004839seconds and 0.000082015seconds respectively. The counter part on the CPU too 0.636 seconds and 1.3375 seconds respectively. This however does not cover the full overhead of what the GPU needs to do with setup. Including this extra cost of setting up memory and copying between CPU and GPU memory, we arrive at more comparable numbers of 0.47 and 0.948 seconds respectively.
 
 Small laptop sized tests such as mentioned above do not to the capabillity of the GPU justice. So we reran the same test, scaled up in size by about <waiting for thing to finish so i can put stuff here>
 
