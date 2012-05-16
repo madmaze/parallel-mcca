@@ -41,6 +41,8 @@ three dictionaries (to source the base lexicons and test words from).
 For our monolingual corpora, we used Project Gutenburg. For the dictionaries,
 ....we asked Chris?.
 
+%TODO: how big were the dictionaries? how did we divide them up?
+
 We removed all multi-word phrases from each dictionary, and then split it into
 three parts. Most (what percent?) of each dictionary went for the base lexicon.
 We ended up with base lexicons on the order of ??? word pairs. The other two
@@ -57,7 +59,7 @@ transformed teh co-occurrence vectors into association vectors. Once we had
 association vectors to represent the words in each corpus, we were ready to
 attempt some translations. :)
 
-%did we remove words that occured fewer than 100 times? at what stage?
+%TODO: did we remove words that occured fewer than 100 times? at what stage?
 
 From the target language corpora, we pulled out the association vectors
 representing test words. Since each of those vectors is already in terms of
@@ -77,12 +79,22 @@ translation.
 %Context Vectors, using cooccurrence:
 
 The goal is to end up with a set of vectors representing a corpus. Each vector
-represents the context that one word (that appeared in the corpus) appears in.
+represents the context that one word (that appeared in the corpus) appeared in.
 The vector is composed of (word,number) mappings. Each mapping represents the
 number of times the word being mapped occurs in a window around the word the
-vector is describing. We used a window size of three, so each word in the
+vector is describing.
+
+We used a window size of three, so each word in the
 vector appeared in the three words before or the three words after the word
 being described.
+
+Rather than using the default of just putting all co-occurrences within the
+window in one vector, we made position within the matter. To do this, the
+final vector is created from six separate vectors: one for each position in
+the window. For example, one of the six vectors would represent the words that
+occur two words before the target word. In practice, we just prepended each
+word with a number to represent which position it was found in, so the keys of
+the dictionary differentiate between the positions.
 
 \section{Association Vector}
 % take a context vector
@@ -96,7 +108,29 @@ lexicon. At this point, use a fancy formula to convert each raw count into an
 association value.  Then, normalize the values so that each vector sums to
 one.
 
+To convert a raw co-occurrence count into an association value, you need: the
+count, the total number of times the word this context vector represents was
+seen, the number of times this word was seen, and the total number of word
+tokens in the corpus.
+
 %TODO: include fancy formula
+\begin{description}
+\item[$k_{11}$ =] frequency of common occurrence of word A and word B
+\item[$k_{12}$ =] corpus frequency of word A $- k_{11}$
+\item[$k_{21}$ =] corpus frequency of word B $- k_{11}$
+\item[$k_{22}$ =] size of corpus (in tokens) - corpus frequency of A - corpus frequency of B
+\item[$C_1$ =] $k_{11} + k_{12}$
+\item[$C_2$ =] $k_{21} + k_{22}$
+\item[$R_1$ =] $k_{11} + k_{21}$
+\item[$R_2$ =] $k_{12} + k_{22}$
+\item[$N$ =] $k_{11} + k_{12} + k_{21} + k_{22}$
+\item[New Value = ]
+    $k_{11}\log\frac{k_{11}N}{C_1R_1} +
+    k_{12}\log\frac{k_{12}N}{C_1R_2} +
+    k_{21}\log\frac{k_{21}N}{C_2R_1} +
+    k_{22}\log\frac{k_{22}N}{C_2R_2}$
+\end{description}
+
 
 \section{Vector Similarity}
 % seems almost too simple to get its own section...
