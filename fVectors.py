@@ -296,6 +296,9 @@ class fVectors:
 		print type(self.vector)
 		legend=[]
 		allVec=[]
+		allVec2=[]
+		Alltotal=0
+		tCnt=0
 		maxLen=0
 		for w1 in self.vector:
 			#print type(self.vector[w1])
@@ -304,7 +307,10 @@ class fVectors:
 			curVec=[]
 			for w2 in self.vector[w1]:
 				curLeg.append(w2)
+				allVec2.append([self.totals[w1],self.totals[w2[2:]],self.vector[w1][w2]])
 				curVec.append(self.vector[w1][w2])
+				Alltotal+=self.vector[w1][w2]
+				tCnt+=1
 			if len(curVec)>maxLen:
 				maxLen=len(curVec)
 			legend.append((w1,curLeg))
@@ -314,4 +320,5 @@ class fVectors:
 			#print "allVec:",allVec
 			#exit()
 		print maxLen
-		return self.vector
+		print float(Alltotal)/tCnt
+		return self.vector, self.totalTokens
