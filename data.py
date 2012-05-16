@@ -11,6 +11,7 @@ import math
 from nltk.tokenize import word_tokenize, wordpunct_tokenize, sent_tokenize
 from nltk.stem import SnowballStemmer
 import cPickle as pickle
+import time
 
 class data:
 	langDirs=[]
@@ -126,9 +127,10 @@ class data:
 		#self.esVecs.getTestVectors("german.2.part","DICT/german.1.part")
 		
 	def transformVecs(self):
-		print "in genVectorsGPU().."
+		print "in transformVecs().."
 		g=parallelmcca.gpuProcessor()
 		
+		start = time.time()
 		if self.gpuFlag:
 			print "transforming Vectors using GPU.."
 			# English
@@ -143,7 +145,8 @@ class data:
 		else:
 			self.enVecs.transfromVector()
 			self.esVecs.transfromVector()
-		
+		end = time.time()
+		print "total time:",end-start
 		
 	def testVectors(self):
 		print "getting test vector"

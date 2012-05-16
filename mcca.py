@@ -4,6 +4,7 @@ import optparse
 import parallelmcca
 
 
+
 if __name__ == "__main__":
 	optparser = optparse.OptionParser()
 	optparser.add_option("-i", "--dataDir", dest="datadir", default="DATA", type="string", help="Dir for lang input files (default='DATA')")
@@ -34,7 +35,7 @@ if __name__ == "__main__":
 		print " Entering Vector Transformation..."
 		D.loadVecs()
 		D.transformVecs()
-		D.testVectors()
+		#D.testVectors()
 		#D.saveVecs()
 	elif opts.run_flag:
 		print " Entering MCCA calculation..."

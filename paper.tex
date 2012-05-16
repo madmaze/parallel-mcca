@@ -94,8 +94,7 @@ $N$ = $k_{11} + k_{12} + k_{21} + k_{22}$ \\
 
 \subsection{Vector Similarity}
 
-Now that we have association vectors, we can calculate the similarity between two vectors by simply calculating a Euclidian "City-Block" distance, which is the sum of each absolute element-wise distance. (\emph{ see equation \ref{cityblock}}) To find the best translation between one of our test vectors and our English source vectors, we minimize on the distance between the vector pairs. Therefore we 
-
+Now that we have association vectors, we can calculate the similarity between two vectors by simply calculating a Euclidian "City-Block" distance, which is the sum of each absolute element-wise distance. (\emph{ see equation \ref{cityblock}}) To find the best translation between one of our test vectors and our English source vectors, we minimize on the distance between the vector pairs. Therefore we find the closest matching vector from the other language, this is our best match and we consider it a translation.
 
 \begin{figure}
 $$\sum_{i\in U,V} |U_i - V_i| $$
@@ -105,7 +104,9 @@ $$\sum_{i\in U,V} |U_i - V_i| $$
 
 \section{Parallelizing Vector Calculations}
 
-Using PyCUDA. %I'm not sure what to write here, since you've done all the parallelizing-ness.
+The parallelization effort of this project was mainly fullfilled my removing our complicated Python dictionary structers and placing our data into flat, extremely large array which could easily be mapped to GPU memory. The main part that was outsourced to the GPU was the association vector calculation. We begin by transforming our input vectors into a 1 dimensional array which the GPU will access based on a stride(width of 1 set of variables). The actual communication with CUDA was done through the Python wrapper class called PyCUDA, which automatically compiles and interfaces with the GPU's C-based libraries.
+
+The GPU is then set to launch as many threads as there are co-occurence values to be calculated. This may sound inefficient, but GPU threads are extremely light weight with very little overhead. Depending on the size of the vectors being calculated, we launch close to 3.5 Million threads at once, arranged in block of 512 threads. Each block is mapped to 1 multiprocessor. Depending on the graphics card used to run this code, it may have between 2 and 32 of these multi processors, each capable of concurrently executing between 16 and 32 threads(depending on architecture). 
 
 \section{Results}
 

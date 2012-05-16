@@ -4,8 +4,10 @@ import pycuda.driver as cuda
 import pycuda.autoinit
 from pycuda.compiler import SourceModule
 import numpy
+import time
 class gpuProcessor:
 	def doParallelTransform(self, inArray, corpusSize):
+		setupstart = time.time()
 		# test data
 		'''a = numpy.array([[10.0,15.0,5.0],
 				[10.0,15.0,6.0],
@@ -64,17 +66,20 @@ class gpuProcessor:
 		
 		gridx=int((vecCnt+511)/512)
 		
+		
+		
 		# Execute cuda kernel
 		print "executing kernel block(512,1,1) grid("+str(gridx)+",1)"
+		#timing
+		start = time.time()
 		func(dest_gpu,a_gpu,cSize,vCnt, block=(512,1,1), grid=(gridx,1))
+		end = time.time()
 		
 		# Return result to host
 		cuda.memcpy_dtoh(dest, dest_gpu)
-		'''
-		print "Input:"
-		print a
-		print "Result:"
-		print dest.shape
-		print dest
-		'''
+		setupend = time.time()
+		
+		print "elapsed time on GPU:",end-start
+		print "elapsed time on GPU & startup:",setupend-setupstart
+
 		return dest

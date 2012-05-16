@@ -6,6 +6,7 @@
 import sys
 import math
 import cPickle as pickle
+import time
 
 class fVectors:
 	lang=''
@@ -116,6 +117,7 @@ class fVectors:
 
 
 	def transfromVector(self):
+		start = time.time()
 		class breakWord1( Exception ):
 			pass
 
@@ -174,6 +176,9 @@ class fVectors:
 
 			except breakWord1:
 				pass
+		end = time.time()
+		
+		print "elapsed time CPU:",end-start
 
 	def cleanupVector(self):
 		print "cleaning chomping vector...."
