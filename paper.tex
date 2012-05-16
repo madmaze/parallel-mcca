@@ -1,14 +1,24 @@
 \documentclass[12pt]{article}
 
-\title{Parallelizing the thing}
-\author{Leah Hanson, Matthias Lee }
-
+\title{Parallelizing Automatic Identification of Word Translations from Unrelated Corpora}
+\author{Leah Hanson, Matthias Lee}
 \begin{document}
 \maketitle
+\begin{abstract}
 
+Coming up with word translations based on unrelated source texts and a base
+lexicon is a useful thing to do. However, it takes a long time when run on one
+CPU. Parallelizing it to run on a GPU makes it run much faster.
+
+\end{abstract}
 \section{Introduction}
 % Describes problem & proposed solution
 % Their thing runs slowly, and would go a lot faster in parallel. :D
+
+It is much easier to get monolingual text than parallel text. For some
+language pairs, parallel text is (nearly) non-existant. Thus, being able to
+expand dictionaries based unrelated corpora can be very useful.
+
 
 \section{Approach}
 % Basic Outline
